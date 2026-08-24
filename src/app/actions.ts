@@ -47,7 +47,7 @@ export async function signUp(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -57,6 +57,12 @@ export async function signUp(
   });
 
   if (error) return { error: error.message };
+
+  // Supabase returns a session here only when email confirmation is switched
+  // off for the project. In that case the account is already usable, and
+  // sending them to "check your email" would be a dead end waiting on a
+  // message nobody is going to send.
+  if (data.session) redirect("/onboarding/about");
 
   redirect(`/confirm?email=${encodeURIComponent(parsed.data.email)}`);
 }
