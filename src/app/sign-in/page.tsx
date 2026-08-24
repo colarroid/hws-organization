@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { Page } from "@/components/ui/Page";
-import { Field } from "@/components/ui/Field";
+import { Field, PasswordField } from "@/components/ui/Field";
 import { FormError, SubmitButton } from "@/components/ui/Form";
 import { signIn, type FormState } from "../actions";
 
@@ -42,10 +42,9 @@ export default function SignInPage() {
         />
 
         <div className="flex flex-col gap-2">
-          <Field
+          <PasswordField
             label="Password"
             name="password"
-            type="password"
             autoComplete="current-password"
             placeholder="Your password"
             required

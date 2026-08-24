@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Field } from "@/components/ui/Field";
+import { PasswordField } from "@/components/ui/Field";
 import { MIN_PASSWORD_LENGTH } from "@/lib/design/taxonomy";
 
 type PasswordFieldsProps = {
@@ -12,10 +12,10 @@ type PasswordFieldsProps = {
 /**
  * The password pair, shared by sign up and by setting a new password.
  *
- * Validation is live on every keystroke rather than on blur. The hint changes
- * tone as it goes: neutral while empty, red while short, green once it is long
- * enough. Length is the only rule, deliberately, because the hint says a
- * memorable phrase beats a complicated word.
+ * Validation is live on every keystroke rather than on blur. There is no
+ * resting hint: the placeholder already states the length, so the field only
+ * speaks once there is something to say, red while short and green once it is
+ * long enough. Length is the only rule.
  */
 export function PasswordFields({
   passwordLabel = "Create a password",
@@ -27,21 +27,19 @@ export function PasswordFields({
   const remaining = MIN_PASSWORD_LENGTH - password.length;
   const hint =
     password.length === 0
-      ? `Ten characters or more. A short phrase you will remember beats a complicated word.`
+      ? undefined
       : remaining > 0
         ? `Too short. ${remaining} more to go.`
         : "Long enough.";
-  const hintTone =
-    password.length === 0 ? "muted" : remaining > 0 ? "error" : "success";
+  const hintTone = remaining > 0 ? "error" : "success";
 
   const mismatch = confirm.length > 0 && password !== confirm;
 
   return (
     <>
-      <Field
+      <PasswordField
         label={passwordLabel}
         name="password"
-        type="password"
         autoComplete="new-password"
         placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
         emphasis={passwordLabel === "New password"}
@@ -50,10 +48,9 @@ export function PasswordFields({
         hint={hint}
         hintTone={hintTone}
       />
-      <Field
+      <PasswordField
         label={confirmLabel}
         name="confirm"
-        type="password"
         autoComplete="new-password"
         placeholder="Type it again"
         value={confirm}

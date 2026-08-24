@@ -26,11 +26,11 @@ export default function SignUpPage() {
     <Page width={480}>
       <div className="flex flex-col gap-[10px]">
         <h1 className="m-0 font-display text-[40px] font-medium leading-[1.1] tracking-[-0.01em]">
-          List your support
+          Onboard your organisation
         </h1>
         <p className="m-0 text-[17px] leading-[1.55] text-ink-70">
-          Reach women across Scotland who are looking for exactly what you
-          offer. Listing is free, and nobody pays for placement.
+          Create your account, then tell us about your organisation. It takes
+          four short steps.
         </p>
       </div>
 
