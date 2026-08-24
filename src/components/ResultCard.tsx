@@ -48,6 +48,8 @@ export function ResultCard({
   strongest = false,
   /** Adds the hover and keyboard-focus edge. Results cards set this. */
   interactive = false,
+  /** Labels this as the top-ranked result. Only ever the first card. */
+  bestMatch = false,
   /** In preview, empty fields are named rather than collapsed. */
   showGaps = false,
 }: {
@@ -58,6 +60,7 @@ export function ResultCard({
   actionSlot?: React.ReactNode;
   strongest?: boolean;
   interactive?: boolean;
+  bestMatch?: boolean;
   showGaps?: boolean;
 }) {
   const fallback = (value: string) =>
@@ -76,12 +79,21 @@ export function ResultCard({
         // pointer crosses them. focus-within means tabbing to Save or Learn
         // more shows which card you are working inside.
         interactive
-          ? "outline-offset-[-2px] hover:outline-2 hover:outline-ink focus-within:outline-2 focus-within:outline-ink"
+          ? [
+              "outline-2 outline-transparent outline-offset-[-2px]",
+              "transition-[outline-color] duration-150 ease-out",
+              "hover:outline-ink focus-within:outline-ink",
+            ].join(" ")
           : "",
       ].join(" ")}
     >
       <div className="flex items-start justify-between gap-6">
         <div className="flex flex-col gap-[5px]">
+          {bestMatch ? (
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-gold-700">
+              Best match
+            </span>
+          ) : null}
           <h2 className={`m-0 text-[23px] font-bold leading-[1.25] ${dim(data.name)}`}>
             {fallback(data.name)}
           </h2>
