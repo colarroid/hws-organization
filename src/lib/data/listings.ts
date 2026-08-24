@@ -102,3 +102,37 @@ export function staleListings(listings: Listing[]): Listing[] {
     return new Date(listing.last_confirmed_at) < cutoff;
   });
 }
+
+export type ListingDetail = Listing & {
+  organisation_id: string;
+  blurb: string | null;
+  who_for: string | null;
+  what_to_expect: string | null;
+  apply_url: string | null;
+  situationIds: string[];
+};
+
+/** One listing with everything the form and the preview card need. */
+export async function getListing(id: string): Promise<ListingDetail | null> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("listings")
+    .select(
+      "id, organisation_id, name, kind, blurb, who_for, what_to_expect, cost, formats, place, deadline, apply_url, status, last_confirmed_at",
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!data) return null;
+
+  const { data: tags } = await supabase
+    .from("listing_situations")
+    .select("situation_id")
+    .eq("listing_id", id);
+
+  return {
+    ...(data as Omit<ListingDetail, "situationIds">),
+    situationIds: (tags ?? []).map((t) => t.situation_id),
+  };
+}

@@ -36,6 +36,7 @@ export type MyOrganisation = {
   place: string | null;
   blurb: string | null;
   status: string;
+  verified_at: string | null;
   primaryZoneId: string | null;
   alsoZoneIds: string[];
 };
@@ -59,7 +60,7 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
 
   const { data: org } = await supabase
     .from("organisations")
-    .select("id, name, type, website, place, blurb, status")
+    .select("id, name, type, website, place, blurb, status, verified_at")
     .eq("id", membership.organisation_id)
     .single();
 
@@ -77,4 +78,30 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
       .filter((z) => z.role === "also")
       .map((z) => z.zone_id),
   };
+}
+
+export type Situation = {
+  id: string;
+  slug: string;
+  label: string;
+};
+
+/**
+ * The situation chips an organisation can tag a listing with.
+ *
+ * `woman_only` is excluded: "Prefer not to say" is an answer she can give on
+ * question 3, never a tag a listing can hold. Both sides read this one table,
+ * so the lists cannot drift apart.
+ */
+export async function getSituations(): Promise<Situation[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("situations")
+    .select("id, slug, label")
+    .eq("woman_only", false)
+    .is("retired_at", null)
+    .order("sort_order");
+
+  if (error) throw error;
+  return data ?? [];
 }
