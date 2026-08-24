@@ -26,7 +26,7 @@ export default function SignUpPage() {
     <Page width={480}>
       <div className="flex flex-col gap-[10px]">
         <h1 className="m-0 font-display text-[40px] font-medium leading-[1.1] tracking-[-0.01em]">
-          Onboard your organisation
+          Get Started
         </h1>
         <p className="m-0 text-[17px] leading-[1.55] text-ink-70">
           Create your account, then tell us about your organisation. It takes
@@ -59,15 +59,6 @@ export default function SignUpPage() {
       >
         I already have an account
       </Link>
-
-      <div className="flex flex-col gap-[10px] border-t border-hairline-soft pt-5">
-        <span className="text-[15px] font-bold">What listing involves</span>
-        <span className="text-[15px] leading-[1.6] text-ink-70">
-          Four short steps to set up, then about ten minutes per solution you
-          post. We check each listing before it goes live, and ask you to
-          confirm it is still accurate every six months.
-        </span>
-      </div>
     </Page>
   );
 }

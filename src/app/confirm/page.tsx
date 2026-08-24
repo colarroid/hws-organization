@@ -56,11 +56,6 @@ export default async function ConfirmPage({
           Use a different address
         </Link>
       </div>
-
-      <span className="text-[14px] leading-[1.5] text-ink-60">
-        Check your spam folder, and if your organisation filters external mail,
-        ask IT to allow our sending domain.
-      </span>
     </Page>
   );
 }

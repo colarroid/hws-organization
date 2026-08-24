@@ -38,12 +38,6 @@ export function ResetRequestForm() {
         />
         <SubmitButton>Send me a reset link</SubmitButton>
       </form>
-
-      {/* Say this. An organisation locked out of its account will otherwise
-          assume its listings went down with it. */}
-      <span className="text-[14px] leading-[1.5] text-ink-60">
-        Your listings stay live while you sort this out. Nothing is taken down.
-      </span>
     </div>
   );
 }

@@ -60,12 +60,17 @@ export default function SignInPage() {
         <SubmitButton>Sign in</SubmitButton>
       </form>
 
-      <Link
-        href="/sign-up"
-        className="self-center p-1 text-[15px] font-bold text-gold-700 no-underline"
-      >
-        List your support for the first time
-      </Link>
+      {/* The question is plain text and only the action is the link, so the
+          link's accessible name is the action itself rather than a sentence. */}
+      <p className="m-0 self-center text-[15px] font-normal text-ink-70">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/sign-up"
+          className="inline-flex min-h-[44px] items-center p-1 font-bold text-gold-700 no-underline"
+        >
+          Create Account
+        </Link>
+      </p>
     </Page>
   );
 }
