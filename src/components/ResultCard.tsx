@@ -39,13 +39,25 @@ const MISSING = "Not filled in yet";
  */
 export function ResultCard({
   data,
-  /** The strongest match carries a 2px border. Preview always shows it. */
+  saveSlot,
+  actionSlot,
+  /**
+   * Draws the heavy border permanently. Used by the organisation preview,
+   * where a single card stands alone and needs an edge.
+   */
   strongest = false,
+  /** Adds the hover and keyboard-focus edge. Results cards set this. */
+  interactive = false,
   /** In preview, empty fields are named rather than collapsed. */
   showGaps = false,
 }: {
   data: ResultCardData;
+  /** Live Save control. Omitted, an inert copy is drawn for preview. */
+  saveSlot?: React.ReactNode;
+  /** Live "Learn more" link. Omitted, an inert copy is drawn for preview. */
+  actionSlot?: React.ReactNode;
   strongest?: boolean;
+  interactive?: boolean;
   showGaps?: boolean;
 }) {
   const fallback = (value: string) =>
@@ -56,9 +68,17 @@ export function ResultCard({
 
   return (
     <article
-      className={`flex flex-col gap-[14px] rounded-card-lg bg-surface p-7 ${
-        strongest ? "border-2 border-ink" : "border border-ring"
-      }`}
+      className={[
+        "flex flex-col gap-[14px] rounded-card-lg bg-surface p-7",
+        strongest ? "border-2 border-ink" : "border border-ring",
+        // outline rather than a thicker border: it is drawn outside the box
+        // model, so nothing reflows and the cards below do not jump as the
+        // pointer crosses them. focus-within means tabbing to Save or Learn
+        // more shows which card you are working inside.
+        interactive
+          ? "outline-offset-[-2px] hover:outline-2 hover:outline-ink focus-within:outline-2 focus-within:outline-ink"
+          : "",
+      ].join(" ")}
     >
       <div className="flex items-start justify-between gap-6">
         <div className="flex flex-col gap-[5px]">
@@ -68,7 +88,8 @@ export function ResultCard({
           <span className="text-[15px] text-ink-65">{data.source}</span>
         </div>
 
-        {/* Inert here. This is a preview of her card, not her card. */}
+        {saveSlot ?? (
+        /* Inert. This is a preview of her card, not her card. */
         <span
           aria-hidden="true"
           className="flex items-center gap-2 whitespace-nowrap rounded-control border border-ring bg-surface px-4 py-3 text-[15px] font-bold text-ink"
@@ -76,6 +97,7 @@ export function ResultCard({
           <Bookmark size={17} strokeWidth={2} className="text-gold-500" />
           <span>Save</span>
         </span>
+        )}
       </div>
 
       <p className={`m-0 max-w-[62ch] text-[17px] leading-[1.6] ${dim(data.blurb)}`}>
@@ -122,12 +144,14 @@ export function ResultCard({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-5">
+        {actionSlot ?? (
         <span
           aria-hidden="true"
           className="rounded-control bg-ink px-8 py-[15px] text-[17px] font-bold text-white"
         >
           Learn more
         </span>
+        )}
         <span className="inline-flex items-center gap-[7px] text-[13px] text-green-700">
           <BadgeCheck size={14} strokeWidth={2} aria-hidden="true" />
           {data.verified}
