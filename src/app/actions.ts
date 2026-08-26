@@ -127,13 +127,31 @@ export async function setNewPassword(
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const supabase = await createClient();
+
+  // The recovery session can lapse between opening the link and submitting.
+  // Supabase says "Auth session missing", which tells the person nothing and
+  // does not tell them the one thing that helps: ask for another link.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      error:
+        "That link has expired. Ask for a new one and you can set your password from that.",
+    };
+  }
+
   const { error } = await supabase.auth.updateUser({
     password: parsed.data.password,
   });
 
   if (error) return { error: error.message };
 
-  redirect("/dashboard");
+  // Straight to the dashboard only if onboarding is done. The root sorts
+  // that out, so a half-onboarded organisation is not dropped somewhere
+  // that immediately bounces them.
+  redirect("/");
 }
 
 /** Re-send the confirmation email. Rate limiting is Supabase's own. */

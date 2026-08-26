@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { Page } from "@/components/ui/Page";
 import { FormError, SubmitButton } from "@/components/ui/Form";
 import { PasswordFields } from "@/components/organisations/PasswordFields";
+import { RecoverySession } from "@/components/organisations/RecoverySession";
 import { setNewPassword, type FormState } from "../actions";
 
 /**
@@ -30,14 +31,16 @@ export default function ResetPasswordPage() {
         </p>
       </div>
 
-      <form action={formAction} className="flex flex-col gap-[22px]">
-        <FormError message={state?.error} />
-        <PasswordFields
-          passwordLabel="New password"
-          confirmLabel="Confirm new password"
-        />
-        <SubmitButton>Save and sign in</SubmitButton>
-      </form>
+      <RecoverySession>
+        <form action={formAction} className="flex flex-col gap-[22px]">
+          <FormError message={state?.error} />
+          <PasswordFields
+            passwordLabel="New password"
+            confirmLabel="Confirm new password"
+          />
+          <SubmitButton>Save and sign in</SubmitButton>
+        </form>
+      </RecoverySession>
     </Page>
   );
 }

@@ -13,9 +13,9 @@ import { ResetRequestForm } from "@/components/organisations/ResetRequestForm";
 export default async function ForgotPasswordPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sent?: string; email?: string }>;
+  searchParams: Promise<{ sent?: string; email?: string; error?: string }>;
 }) {
-  const { sent, email } = await searchParams;
+  const { sent, email, error } = await searchParams;
 
   return (
     <Page width={480} top={72}>
@@ -27,7 +27,19 @@ export default async function ForgotPasswordPage({
         Sign in
       </Link>
 
-      {sent ? (
+      {/* A link that failed used to drop them back here with no explanation,
+          which reads as the reset simply not working. */}
+      {error ? (
+        <p
+          role="alert"
+          className="m-0 rounded-control border border-gold-300 bg-gold-200 px-4 py-3 text-[16px] leading-[1.5] text-gold-700"
+        >
+          That link has expired or has already been used. Reset links work for
+          one hour and only once. Ask for a new one below.
+        </p>
+      ) : null}
+
+      {sent && !error ? (
         <div className="flex flex-col gap-[22px]">
           <span className="flex text-gold-500">
             <Mail size={36} strokeWidth={2} aria-hidden="true" />
