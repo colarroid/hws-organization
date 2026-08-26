@@ -128,7 +128,20 @@ export default async function DashboardPage({
 
   return (
     <Page width={900} top={56} gap={28}>
-      {organisation.status !== "verified" ? (
+      {organisation.status === "more_evidence" || organisation.status === "rejected" ? (
+        <Banner tone="warning" icon={<TriangleAlert size={20} strokeWidth={2} />}>
+          <strong>
+            {organisation.status === "rejected"
+              ? "We could not verify you yet."
+              : "We need one more thing to verify you."}
+          </strong>{" "}
+          Nothing you have written is lost. See{" "}
+          <Link href="/organisation" className="font-bold underline">
+            your organisation page
+          </Link>{" "}
+          for what we asked for.
+        </Banner>
+      ) : organisation.status !== "verified" ? (
         <Banner tone="info" icon={<Clock size={20} strokeWidth={2} />}>
           <strong>Verification in progress.</strong> You can draft and submit
           solutions now. They publish as soon as we confirm your details.

@@ -37,6 +37,8 @@ export type MyOrganisation = {
   blurb: string | null;
   status: string;
   verified_at: string | null;
+  /** What HWS last said, when they asked for more or declined. */
+  review_note: string | null;
   primaryZoneId: string | null;
   alsoZoneIds: string[];
 };
@@ -60,7 +62,7 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
 
   const { data: org } = await supabase
     .from("organisations")
-    .select("id, name, type, website, place, blurb, status, verified_at")
+    .select("id, name, type, website, place, blurb, status, verified_at, review_note")
     .eq("id", membership.organisation_id)
     .single();
 

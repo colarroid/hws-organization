@@ -1,15 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, BadgeCheck, UserPlus } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
-
-const DATE = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-});
+import { VerificationStatus } from "@/components/organisations/VerificationStatus";
 
 const ROW =
   "flex flex-wrap items-center justify-between gap-4 border-b border-hairline-soft py-4 last:border-b-0";
@@ -34,8 +29,6 @@ export default async function OrganisationPage() {
   const primaryZone =
     zones.find((z) => z.id === organisation.primaryZoneId)?.name ?? "Not set";
 
-  const verified = organisation.status === "verified";
-
   return (
     <Page width={660} top={56} gap={30}>
       <Link
@@ -54,29 +47,11 @@ export default async function OrganisationPage() {
         <h2 className="m-0 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-60">
           Verification
         </h2>
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-ring bg-surface px-[22px] py-5">
-          <span
-            className={`flex items-center gap-[10px] text-[16px] font-semibold ${
-              verified ? "text-green-700" : "text-gold-700"
-            }`}
-          >
-            <BadgeCheck size={18} strokeWidth={2} aria-hidden="true" />
-            {verified
-              ? `Verified · confirmed ${
-                  organisation.verified_at
-                    ? DATE.format(new Date(organisation.verified_at))
-                    : "recently"
-                }`
-              : "Verification in progress"}
-          </span>
-          {/* Both routes reach a person. Neither is self-service. */}
-          <Link
-            href="/onboarding/verify"
-            className="p-1 text-[15px] font-bold text-gold-700 no-underline"
-          >
-            {verified ? "View details" : "Chase this"}
-          </Link>
-        </div>
+        <VerificationStatus
+          status={organisation.status}
+          verifiedAt={organisation.verified_at}
+          reviewNote={organisation.review_note}
+        />
       </section>
 
       <section className="flex flex-col gap-2">
