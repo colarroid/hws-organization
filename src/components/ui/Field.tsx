@@ -6,6 +6,23 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type HintTone = "muted" | "error" | "success";
 
+/**
+ * The required marker.
+ *
+ * aria-hidden because the asterisk is decoration: screen readers already
+ * announce a required field from the input's own attribute, and hearing
+ * "star" after every label is noise. The colour is gold 700, never gold 500,
+ * which does not reach AA at this size on the cream ground.
+ */
+function Required({ when }: { when?: boolean }) {
+  if (!when) return null;
+  return (
+    <span aria-hidden="true" className="text-gold-700">
+      {" "}*
+    </span>
+  );
+}
+
 const HINT_TONE: Record<HintTone, string> = {
   muted: "text-ink-60",
   error: "text-red-700",
@@ -56,6 +73,7 @@ export function Field({
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-[15px] font-semibold">
         {label}
+        <Required when={props.required} />
       </label>
       <input
         id={id}
@@ -116,6 +134,7 @@ export function TextAreaField({
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-[15px] font-semibold">
         {label}
+        <Required when={props.required} />
       </label>
       <textarea
         id={id}
@@ -187,6 +206,7 @@ export function PasswordField({
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-[15px] font-semibold">
         {label}
+        <Required when={props.required} />
       </label>
 
       <div className="relative flex items-center">

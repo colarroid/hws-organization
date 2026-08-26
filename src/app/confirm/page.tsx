@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Mail } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { ResendLink } from "@/components/organisations/ResendLink";
+import { createClient } from "@/lib/supabase/server";
+import { getMyOrganisation } from "@/lib/data/organisations";
 
 /**
  * Screen 2. Confirm your email.
@@ -21,6 +24,19 @@ export default async function ConfirmPage({
   searchParams: Promise<{ email?: string }>;
 }) {
   const { email } = await searchParams;
+
+  // She confirmed in another tab or on her phone, then came back to this one
+  // and reloaded. Leaving her on "check your email" when the account is
+  // already live is the moment people give up and sign up again.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const organisation = await getMyOrganisation();
+    redirect(organisation ? "/dashboard" : "/onboarding/about");
+  }
 
   return (
     <Page width={520}>
@@ -46,6 +62,13 @@ export default async function ConfirmPage({
           works there.
         </span>
       </div>
+
+      {/* Reloading this page is the check. Say so, rather than leaving her
+          to guess whether anything happened. */}
+      <p className="m-0 text-[15px] leading-[1.6] text-ink-60">
+        Opened the link already? Reload this page and we will take you
+        straight in.
+      </p>
 
       <div className="flex flex-col gap-2">
         <ResendLink email={email} />

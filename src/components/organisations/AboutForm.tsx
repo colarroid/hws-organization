@@ -42,6 +42,9 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
       <div className="flex flex-col gap-[10px]">
         <span className="text-[15px] font-semibold" id="org-type-label">
           What kind of organisation are you?
+          {/* Required, and a chip group rather than a field, so the marker
+              is written out here to match the labelled inputs. */}
+          <span aria-hidden="true" className="text-gold-700"> *</span>
         </span>
         <ChipGroup label="What kind of organisation are you?" multi={false}>
           {ORGANISATION_TYPES.map((option) => (

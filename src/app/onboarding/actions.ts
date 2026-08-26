@@ -62,23 +62,18 @@ export async function saveAbout(
       .eq("id", existingId);
     if (error) return { error: error.message };
   } else {
-    const { data, error } = await supabase
-      .from("organisations")
-      .insert(fields)
-      .select("id")
-      .single();
+    // Creating the organisation and joining it are one act, so they go
+    // through a single function rather than two inserts that can half
+    // succeed. See migration 0012.
+    const { error } = await supabase.rpc("create_organisation", {
+      p_name: fields.name,
+      p_type: fields.type,
+      p_website: fields.website,
+      p_place: fields.place,
+      p_blurb: fields.blurb,
+    });
 
     if (error) return { error: error.message };
-
-    const { error: memberError } = await supabase
-      .from("organisation_members")
-      .insert({
-        organisation_id: data.id,
-        user_id: user.id,
-        role: "owner",
-      });
-
-    if (memberError) return { error: memberError.message };
   }
 
   redirect("/onboarding/zones");

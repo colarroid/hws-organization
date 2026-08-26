@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Page } from "@/components/ui/Page";
 import { Field, PasswordField } from "@/components/ui/Field";
 import { FormError, SubmitButton } from "@/components/ui/Form";
@@ -14,8 +15,9 @@ import { signIn, type FormState } from "../actions";
  * The failure message never distinguishes a wrong password from an address
  * with no account.
  */
-export default function SignInPage() {
+function SignInScreen() {
   const [state, formAction] = useActionState<FormState, FormData>(signIn, null);
+  const expired = useSearchParams().get("error") === "link-expired";
 
   return (
     <Page width={480}>
@@ -27,6 +29,17 @@ export default function SignInPage() {
           Manage your listings and post new ones.
         </p>
       </div>
+
+      {expired ? (
+        <p
+          role="alert"
+          className="m-0 rounded-control border border-gold-300 bg-gold-200 px-4 py-3 text-[16px] leading-[1.5] text-gold-700"
+        >
+          That link has expired or was already used. Sign in below, or ask for
+          a new confirmation email by creating your account again with the
+          same address.
+        </p>
+      ) : null}
 
       <form action={formAction} className="flex flex-col gap-[22px]">
         <FormError message={state?.error} />
@@ -72,5 +85,14 @@ export default function SignInPage() {
         </Link>
       </p>
     </Page>
+  );
+}
+
+/** useSearchParams needs a Suspense boundary in the app router. */
+export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInScreen />
+    </Suspense>
   );
 }
