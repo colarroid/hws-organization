@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { SolutionForm } from "@/components/organisations/SolutionForm";
 import { getMyOrganisation, getSituations } from "@/lib/data/organisations";
@@ -35,13 +33,6 @@ export default async function EditSolutionPage({
 
   return (
     <Page width={720} top={56} gap={28}>
-      <Link
-        href="/solutions"
-        className="inline-flex min-h-[44px] items-center gap-[6px] self-start text-[14px] font-bold text-ink no-underline"
-      >
-        <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
-        My solutions
-      </Link>
 
       <div className="flex flex-col gap-[10px]">
         <h1 className="m-0 font-display text-[42px] font-normal leading-[1.1] tracking-[-0.01em]">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
@@ -40,13 +40,6 @@ export default async function OrganisationPage() {
 
   return (
     <Page width={660} top={56} gap={30}>
-      <Link
-        href="/solutions"
-        className="inline-flex min-h-[44px] items-center gap-[6px] self-start text-[14px] font-bold text-ink no-underline"
-      >
-        <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
-        My solutions
-      </Link>
 
       <h1 className="m-0 font-display text-[42px] font-normal leading-[1.1] tracking-[-0.01em]">
         Organisation

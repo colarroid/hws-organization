@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, LayoutDashboard, LogOut, Plus, Rows3 } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { MobileNav } from "@/components/ui/MobileNav";
+import { OrgNav } from "@/components/organisations/OrgNav";
 import { signOut } from "@/app/actions";
 
 type OrgHeaderProps = {
@@ -16,26 +17,19 @@ type OrgHeaderProps = {
   liveCount?: number;
 };
 
-const PANEL_LINK =
-  "inline-flex w-full items-center gap-3 min-h-[44px] rounded-control " +
-  "px-3 py-[10px] text-[15px] font-semibold text-ink no-underline " +
-  "transition-[color,background-color] duration-150 ease-out hover:bg-gold-200";
-
 /**
  * Sign out, for the header rather than the rail.
  *
  * A form posting to a server action rather than a link, since signing out is
  * a state change and must not be something a prefetch or a crawler can do.
  */
-function SignOutControl({ inPanel = false }: { inPanel?: boolean }) {
+function SignOutControl() {
   return (
-    <form action={signOut} className={inPanel ? "contents" : "flex"}>
+    <form action={signOut} className="flex">
       <button
         type="submit"
         className={
-          inPanel
-            ? `${PANEL_LINK} cursor-pointer border-0 bg-transparent text-left`
-            : "inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border-0 bg-surface px-4 py-[9px] text-[15px] font-semibold text-ink shadow-hairline transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold"
+          "inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border-0 bg-surface px-4 py-[9px] text-[15px] font-semibold text-ink shadow-hairline transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold"
         }
       >
         <LogOut size={17} strokeWidth={2} aria-hidden="true" />
@@ -94,28 +88,7 @@ export function OrgHeader({
 
           {!signedIn ? null : hasOrganisation ? (
             <MobileNav label="organisation menu">
-              <Link href="/solutions/new" className={`${PANEL_LINK} bg-ink text-white hover:bg-ink hover:opacity-90`}>
-                <Plus size={17} strokeWidth={2} aria-hidden="true" />
-                <span>Post a solution</span>
-              </Link>
-              <Link href="/dashboard" className={PANEL_LINK}>
-                <LayoutDashboard size={17} strokeWidth={2} aria-hidden="true" />
-                <span>Overview</span>
-              </Link>
-              <Link href="/solutions" className={PANEL_LINK}>
-                <Rows3 size={17} strokeWidth={2} aria-hidden="true" />
-                <span className="flex-1">My solutions</span>
-                {liveCount > 0 ? (
-                  <span className="rounded-full bg-gold-200 px-2 py-[2px] text-[13px] font-bold text-gold-700">
-                    {liveCount}
-                  </span>
-                ) : null}
-              </Link>
-              <Link href="/organisation" className={PANEL_LINK}>
-                <Building2 size={17} strokeWidth={2} aria-hidden="true" />
-                <span>Organisation</span>
-              </Link>
-              <SignOutControl inPanel />
+              <OrgNav variant="panel" liveCount={liveCount} />
             </MobileNav>
           ) : (
             /* Part way through onboarding. One control, so it is shown
