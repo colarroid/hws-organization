@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { MIN_PASSWORD_LENGTH } from "@/lib/design/taxonomy";
@@ -16,6 +16,44 @@ async function origin() {
 }
 
 const email = z.string().trim().min(1, "Add your email address.").email();
+
+/**
+ * Proof that this browser is the one that just signed up.
+ *
+ * The confirm screen used to take its address from `?email=`, which anyone
+ * can type. That made the screen, and the resend behind it, a way to ask
+ * whether a given address is registered and confirmed. Nothing else in the
+ * portal answers that question: sign-in returns one message for both cases,
+ * and the reset screen is silent on purpose.
+ *
+ * This cookie closes it. The address is read from here rather than the URL,
+ * so the only person who can reach the screen, or trigger a resend, is the
+ * person who signed up in this browser. It is cleared the moment
+ * confirmation lands, which is also what lets a reload move on rather than
+ * sitting on "check your email" forever.
+ *
+ * 24 hours, matching the lifetime of the link itself.
+ */
+const PENDING_COOKIE = "hws_pending_confirmation";
+const PENDING_MAX_AGE = 60 * 60 * 24;
+
+async function setPending(address: string) {
+  (await cookies()).set(PENDING_COOKIE, address, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: PENDING_MAX_AGE,
+  });
+}
+
+export async function readPending() {
+  return (await cookies()).get(PENDING_COOKIE)?.value ?? null;
+}
+
+export async function clearPending() {
+  (await cookies()).delete(PENDING_COOKIE);
+}
 
 const signUpSchema = z
   .object({
@@ -64,7 +102,8 @@ export async function signUp(
   // message nobody is going to send.
   if (data.session) redirect("/onboarding/about");
 
-  redirect(`/confirm?email=${encodeURIComponent(parsed.data.email)}`);
+  await setPending(parsed.data.email);
+  redirect("/confirm");
 }
 
 export async function signIn(
@@ -171,12 +210,18 @@ export type ResendResult =
  * wording matters most: nothing is broken, the mail is coming, and telling
  * her to wait is more use than telling her it failed.
  */
-export async function resendConfirmation(
-  address: string,
-): Promise<ResendResult> {
-  const parsed = email.safeParse(address);
+export async function resendConfirmation(): Promise<ResendResult> {
+  // Read from the cookie, never from an argument. See PENDING_COOKIE: taking
+  // the address from the caller is what made this an enumeration oracle.
+  const pending = await readPending();
+  const parsed = email.safeParse(pending);
+
   if (!parsed.success) {
-    return { ok: false, error: "That address does not look right." };
+    return {
+      ok: false,
+      error: "This link has expired. Sign in, or sign up again.",
+      signIn: true,
+    };
   }
 
   const supabase = await createClient();
@@ -213,6 +258,10 @@ export async function resendConfirmation(
     error.code === "email_address_already_confirmed" ||
     /already .*confirmed|already registered/i.test(error.message ?? "")
   ) {
+    // Now known to be confirmed, so the screen has nothing left to do.
+    // Clearing this is what makes the next reload land on sign-in instead of
+    // offering to resend an email that will never be sent.
+    await clearPending();
     return {
       ok: false,
       error: "This address is already confirmed.",

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { clearPending } from "@/app/actions";
 
 /**
  * The real destination of the confirmation email.
@@ -42,6 +43,11 @@ export async function GET(request: NextRequest) {
   if (!confirmed) {
     return NextResponse.redirect(`${origin}/sign-in?error=link-expired`);
   }
+
+  // Confirmed, so the pending marker has done its job. Clearing it means a
+  // stale /confirm tab reloads onto sign-in instead of offering a resend
+  // that Supabase would now refuse.
+  await clearPending();
 
   // Onboarding if they have not started, their dashboard if they have.
   const { data: membership } = await supabase

@@ -6,6 +6,7 @@ import { Page } from "@/components/ui/Page";
 import { ResendLink } from "@/components/organisations/ResendLink";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
+import { readPending } from "@/app/actions";
 
 export const metadata: Metadata = { title: "Confirm your email" };
 
@@ -21,13 +22,7 @@ export const metadata: Metadata = { title: "Confirm your email" };
  * organisation. There is no bypass, which is why the spam-folder note matters
  * more than it looks.
  */
-export default async function ConfirmPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ email?: string }>;
-}) {
-  const { email } = await searchParams;
-
+export default async function ConfirmPage() {
   // She confirmed in another tab or on her phone, then came back to this one
   // and reloaded. Leaving her on "check your email" when the account is
   // already live is the moment people give up and sign up again.
@@ -41,6 +36,13 @@ export default async function ConfirmPage({
     redirect(organisation ? "/dashboard" : "/onboarding/about");
   }
 
+  // No pending sign-up in this browser, so there is nothing here to wait for.
+  // That covers the reload after confirming elsewhere, a bookmark, a stale
+  // tab, and anyone who simply typed the address in. The screen used to take
+  // the address from `?email=` and would render for any of them.
+  const email = await readPending();
+  if (!email) redirect("/sign-in");
+
   return (
     <Page width={520}>
       <span className="flex text-gold-500">
@@ -52,7 +54,7 @@ export default async function ConfirmPage({
           Confirm your email
         </h1>
         <p className="m-0 text-[17px] leading-[1.6] text-ink-70">
-          We sent a link to <strong className="text-ink">{email ?? "your address"}</strong>. Open
+          We sent a link to <strong className="text-ink">{email}</strong>. Open
           it to finish setting up your account. The link works for 24 hours.
         </p>
       </div>
@@ -74,7 +76,7 @@ export default async function ConfirmPage({
       </p>
 
       <div className="flex flex-col gap-2">
-        <ResendLink email={email} />
+        <ResendLink />
         <Link
           href="/sign-up"
           className="self-start p-1 text-[15px] font-bold text-gold-700 no-underline"

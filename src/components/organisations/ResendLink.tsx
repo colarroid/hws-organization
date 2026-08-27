@@ -12,8 +12,12 @@ const COOLDOWN_SECONDS = 60;
  * The prototype rendered a fixed "in 47 seconds" as a static string. This
  * counts for real, and the control is a disabled button rather than plain
  * text while it waits, so its state is exposed rather than implied.
+ *
+ * Takes no address. The action reads the pending-confirmation cookie, so the
+ * only address this can ever resend to is the one that signed up in this
+ * browser.
  */
-export function ResendLink({ email }: { email?: string }) {
+export function ResendLink() {
   const [remaining, setRemaining] = useState(COOLDOWN_SECONDS);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,16 +30,15 @@ export function ResendLink({ email }: { email?: string }) {
     return () => clearTimeout(timer);
   }, [remaining]);
 
-  if (!email) return null;
-
   const ready = remaining <= 0;
 
   return (
     <div aria-live="polite" className="text-[15px] text-ink-60">
-      {/* Never a dead end, so `ready` is tested first: whatever happened
-          last time, once the cooldown ends the control is back and she can
-          try again without reloading. */}
-      {ready ? (
+      {/* `signIn` is terminal: the account is confirmed, so no amount of
+          resending will produce an email and the control does not come back.
+          Every other outcome returns it once the cooldown ends, since none of
+          them mean trying again is pointless. */}
+      {ready && !signIn ? (
         <>
           Nothing arrived?{" "}
           <button
@@ -43,7 +46,7 @@ export function ResendLink({ email }: { email?: string }) {
             disabled={pending}
             onClick={() =>
               startTransition(async () => {
-                const result = await resendConfirmation(email);
+                const result = await resendConfirmation();
                 // The cooldown restarts either way. If Supabase turned this
                 // down for rate limiting, hammering the button is the one
                 // thing that cannot help.
@@ -65,11 +68,10 @@ export function ResendLink({ email }: { email?: string }) {
           </button>
         </>
       ) : error ? (
-        <span className="text-red-700">
+        <span className={signIn ? "text-ink-70" : "text-red-700"}>
           {error}
-          {/* Never a dead end: the one failure with an obvious way onward
-              says so, rather than leaving her on a screen waiting for an
-              email that is never coming because she does not need it. */}
+          {/* Never a dead end. The cookie has been cleared server side too,
+              so reloading this screen now lands on sign-in rather than here. */}
           {signIn ? (
             <>
               {" "}
