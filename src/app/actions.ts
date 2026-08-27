@@ -128,6 +128,24 @@ export async function signIn(
   redirect("/dashboard");
 }
 
+/**
+ * Sign out, and land on sign-in rather than the root.
+ *
+ * The root redirects a signed-out visitor to sign-in anyway, but going
+ * straight there avoids a bounce through a page that only exists to send
+ * them somewhere else.
+ *
+ * The pending-confirmation cookie is cleared too. Someone who signs up,
+ * leaves the tab, then signs in on a different account would otherwise still
+ * be carrying a marker for the first address.
+ */
+export async function signOut() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  await clearPending();
+  redirect("/sign-in");
+}
+
 export async function requestPasswordReset(
   _prev: FormState,
   formData: FormData,
