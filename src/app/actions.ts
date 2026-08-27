@@ -154,15 +154,58 @@ export async function setNewPassword(
   redirect("/");
 }
 
-/** Re-send the confirmation email. Rate limiting is Supabase's own. */
-export async function resendConfirmation(address: string) {
+export type ResendResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Re-send the confirmation email. Rate limiting is Supabase's own.
+ *
+ * The result is reported, unlike the password reset above. There the silence
+ * is deliberate, because the screen must not reveal whether an account
+ * exists. Here she has just created the account and is looking at her own
+ * address on the screen, so there is nothing to protect and a failure she
+ * cannot see is only a failure she repeats.
+ *
+ * Rate limiting is the common case by far, and it is the one where the
+ * wording matters most: nothing is broken, the mail is coming, and telling
+ * her to wait is more use than telling her it failed.
+ */
+export async function resendConfirmation(
+  address: string,
+): Promise<ResendResult> {
   const parsed = email.safeParse(address);
-  if (!parsed.success) return;
+  if (!parsed.success) {
+    return { ok: false, error: "That address does not look right." };
+  }
 
   const supabase = await createClient();
-  await supabase.auth.resend({
+  const { error } = await supabase.auth.resend({
     type: "signup",
     email: parsed.data,
     options: { emailRedirectTo: `${await origin()}/auth/confirm` },
   });
+
+  if (!error) return { ok: true };
+
+  if (error.status === 429 || error.code === "over_email_send_rate_limit") {
+    return {
+      ok: false,
+      error:
+        "We have sent a few of these already. Wait a couple of minutes, then try once more.",
+    };
+  }
+
+  // Supabase says this when the address is already confirmed, which means
+  // she can simply sign in. Sending her back to sign-up would be the wrong
+  // door entirely.
+  if (error.code === "email_address_already_confirmed") {
+    return {
+      ok: false,
+      error: "This address is already confirmed. You can sign in.",
+    };
+  }
+
+  return {
+    ok: false,
+    error: "We could not send it just now. Try again in a moment.",
+  };
 }

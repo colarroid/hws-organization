@@ -15,6 +15,7 @@ const COOLDOWN_SECONDS = 60;
 export function ResendLink({ email }: { email?: string }) {
   const [remaining, setRemaining] = useState(COOLDOWN_SECONDS);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -29,9 +30,10 @@ export function ResendLink({ email }: { email?: string }) {
 
   return (
     <div aria-live="polite" className="text-[15px] text-ink-60">
-      {sent ? (
-        <span>Sent again. It can take a minute to arrive.</span>
-      ) : ready ? (
+      {/* Never a dead end, so `ready` is tested first: whatever happened
+          last time, once the cooldown ends the control is back and she can
+          try again without reloading. */}
+      {ready ? (
         <>
           Nothing arrived?{" "}
           <button
@@ -39,9 +41,18 @@ export function ResendLink({ email }: { email?: string }) {
             disabled={pending}
             onClick={() =>
               startTransition(async () => {
-                await resendConfirmation(email);
-                setSent(true);
+                const result = await resendConfirmation(email);
+                // The cooldown restarts either way. If Supabase turned this
+                // down for rate limiting, hammering the button is the one
+                // thing that cannot help.
                 setRemaining(COOLDOWN_SECONDS);
+                if (result.ok) {
+                  setError(null);
+                  setSent(true);
+                } else {
+                  setSent(false);
+                  setError(result.error);
+                }
               })
             }
             className="cursor-pointer border-0 bg-transparent p-1 text-[15px] font-bold text-gold-700 disabled:opacity-40"
@@ -49,6 +60,10 @@ export function ResendLink({ email }: { email?: string }) {
             Send it again
           </button>
         </>
+      ) : error ? (
+        <span className="text-red-700">{error}</span>
+      ) : sent ? (
+        <span>Sent again. It can take a minute to arrive.</span>
       ) : (
         <>
           Nothing arrived? You can{" "}
