@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { OnboardingShell } from "@/components/organisations/OnboardingShell";
 import { VerifyForm } from "@/components/organisations/VerifyForm";
 import { getMyOrganisation } from "@/lib/data/organisations";
+
+export const metadata: Metadata = { title: "Let us verify you" };
 
 export default async function VerifyPage() {
   const organisation = await getMyOrganisation();

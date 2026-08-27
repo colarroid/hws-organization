@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { BadgeCheck } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { ButtonLink } from "@/components/ui/Button";
+
+export const metadata: Metadata = { title: "Submitted for review" };
 
 /**
  * Screen 12. Submitted for review.

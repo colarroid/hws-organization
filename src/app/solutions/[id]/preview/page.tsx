@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -10,6 +11,8 @@ import { getListing } from "@/lib/data/listings";
 import { COSTS, FORMATS, SOLUTION_KINDS, labelFor } from "@/lib/design/taxonomy";
 
 const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long" });
+
+export const metadata: Metadata = { title: "How she will see it" };
 
 /**
  * Screen 11. Preview as she will see it.

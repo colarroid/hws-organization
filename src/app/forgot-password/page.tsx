@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { ResetRequestForm } from "@/components/organisations/ResetRequestForm";
+
+export const metadata: Metadata = { title: "Reset your password" };
 
 /**
  * Screen 4. Reset your password.

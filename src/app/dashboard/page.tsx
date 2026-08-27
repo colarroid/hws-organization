@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Clock, FilePlus2, TriangleAlert } from "lucide-react";
@@ -91,6 +92,8 @@ function countLine(listings: Listing[]): string {
 
 const TAB_PILL =
   "inline-flex min-h-[44px] items-center rounded-full px-[18px] py-[10px] text-[15px] no-underline";
+
+export const metadata: Metadata = { title: "My solutions" };
 
 /**
  * Screen 9. Dashboard.

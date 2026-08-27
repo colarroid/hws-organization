@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Mail } from "lucide-react";
@@ -5,6 +6,8 @@ import { Page } from "@/components/ui/Page";
 import { ResendLink } from "@/components/organisations/ResendLink";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
+
+export const metadata: Metadata = { title: "Confirm your email" };
 
 /**
  * Screen 2. Confirm your email.

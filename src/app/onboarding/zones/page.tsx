@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { OnboardingShell } from "@/components/organisations/OnboardingShell";
 import { ZonesPicker } from "@/components/organisations/ZonesPicker";
 import { getAccessZones, getMyOrganisation } from "@/lib/data/organisations";
+
+export const metadata: Metadata = { title: "Where do you fit?" };
 
 export default async function ZonesPage() {
   const [organisation, zones] = await Promise.all([

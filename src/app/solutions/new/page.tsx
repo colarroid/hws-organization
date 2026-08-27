@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { SolutionForm } from "@/components/organisations/SolutionForm";
 import { getMyOrganisation, getSituations } from "@/lib/data/organisations";
+
+export const metadata: Metadata = { title: "Post a solution" };
 
 export default async function NewSolutionPage() {
   const organisation = await getMyOrganisation();

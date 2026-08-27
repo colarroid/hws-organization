@@ -22,8 +22,19 @@ const inter = Inter({
   display: "swap",
 });
 
+/**
+ * Every screen sets its own title, matching the heading it shows. The
+ * template appends the suffix so no page repeats it.
+ *
+ * `default` covers only the root redirect, which never paints, so it names
+ * the portal rather than any one screen. It used to read "List your support",
+ * which is a screen name, and every tab in the portal inherited it.
+ */
 export const metadata: Metadata = {
-  title: "List your support | HWS Portal",
+  title: {
+    default: "HWS Portal for organisations",
+    template: "%s | HWS Portal",
+  },
   description:
     "Reach women across Scotland who are looking for exactly what you offer. Listing is free, and nobody pays for placement.",
 };

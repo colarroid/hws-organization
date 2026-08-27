@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -5,6 +6,8 @@ import { Page } from "@/components/ui/Page";
 import { SolutionForm } from "@/components/organisations/SolutionForm";
 import { getMyOrganisation, getSituations } from "@/lib/data/organisations";
 import { getListing } from "@/lib/data/listings";
+
+export const metadata: Metadata = { title: "Edit solution" };
 
 export default async function EditSolutionPage({
   params,

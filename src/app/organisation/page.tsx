@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, UserPlus } from "lucide-react";
@@ -8,6 +9,8 @@ import { VerificationStatus } from "@/components/organisations/VerificationStatu
 
 const ROW =
   "flex flex-wrap items-center justify-between gap-4 border-b border-hairline-soft py-4 last:border-b-0";
+
+export const metadata: Metadata = { title: "Organisation" };
 
 /**
  * Screen 13. Organisation.
