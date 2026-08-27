@@ -94,7 +94,7 @@ export function ZonesPicker({
                 className={[
                   "flex cursor-pointer flex-col gap-[5px] rounded-card p-[18px] text-left",
                   isPrimary
-                    ? "shadow-hairline-ink bg-ink text-white"
+                    ? "bg-ink text-white"
                     : isAlso
                       ? "border border-gold-300 bg-gold-200 text-ink"
                       : "shadow-hairline bg-surface text-ink transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold",

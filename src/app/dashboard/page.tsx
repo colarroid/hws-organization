@@ -204,7 +204,7 @@ export default async function DashboardPage({
                   aria-current={active ? "page" : undefined}
                   className={`${TAB_PILL} ${
                     active
-                      ? "shadow-hairline-ink bg-ink font-semibold text-white"
+                      ? "bg-ink font-semibold text-white"
                       : "shadow-hairline bg-surface font-semibold text-ink transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold"
                   }`}
                 >
