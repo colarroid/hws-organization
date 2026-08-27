@@ -46,8 +46,11 @@ export function OrgNav({
   const isActive = useIsActive();
   const panel = variant === "panel";
 
+  // No rail on the active item. The fill carries it: gold 200 on the white
+  // panel is a clear enough step, and it has the weight change and the gold
+  // icon with it.
   const base =
-    "group relative inline-flex min-h-[44px] w-full items-center gap-3 rounded-control " +
+    "inline-flex min-h-[44px] w-full items-center gap-3 rounded-control " +
     "px-3 py-[10px] text-[15px] no-underline " +
     "transition-[color,background-color] duration-150 ease-out";
 
@@ -87,15 +90,6 @@ export function OrgNav({
                   : "font-medium text-ink-70 hover:bg-gold-200/60 hover:text-ink",
               ].join(" ")}
             >
-              {/* A gold rail on the active item. The fill alone reads as a
-                  hover on a cream ground; the rail makes it a state. */}
-              <span
-                aria-hidden="true"
-                className={[
-                  "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full",
-                  active ? "bg-gold-500" : "bg-transparent",
-                ].join(" ")}
-              />
               <Icon
                 size={18}
                 strokeWidth={2}
