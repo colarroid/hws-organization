@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getMyOrganisation } from "@/lib/data/organisations";
+import { onboardingNextStep } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -19,6 +20,9 @@ export default async function OrganisationsIndex() {
 
   if (!user) redirect("/sign-in");
 
+  // Not "has an organisation, so it must be done". Step 1 creates the
+  // organisation, so that test sent anyone who broke off after it to a
+  // dashboard for a listing they could not yet publish.
   const organisation = await getMyOrganisation();
-  redirect(organisation ? "/dashboard" : "/onboarding/about");
+  redirect(onboardingNextStep(organisation) ?? "/dashboard");
 }

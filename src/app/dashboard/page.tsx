@@ -9,6 +9,7 @@ import { Banner } from "@/components/organisations/Banner";
 import { ConfirmFreshnessButton } from "@/components/organisations/ConfirmFreshnessButton";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
+import { onboardingNextStep } from "@/lib/onboarding";
 import {
   getListings,
   getStatsByListing,
@@ -117,6 +118,11 @@ export default async function DashboardPage({
 
   const organisation = await getMyOrganisation();
   if (!organisation) redirect("/onboarding/about");
+
+  // Onboarding can be broken off after step 1, which is what creates the
+  // organisation. Finish it before anything that assumes it is done.
+  const nextStep = onboardingNextStep(organisation);
+  if (nextStep) redirect(nextStep);
 
   const listings = await getListings(organisation.id);
   const statsByListing = await getStatsByListing(listings.map((l) => l.id));

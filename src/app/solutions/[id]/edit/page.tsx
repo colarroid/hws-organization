@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { SolutionForm } from "@/components/organisations/SolutionForm";
 import { getMyOrganisation, getSituations } from "@/lib/data/organisations";
+import { onboardingNextStep } from "@/lib/onboarding";
 import { getListing } from "@/lib/data/listings";
 
 export const metadata: Metadata = { title: "Edit solution" };
@@ -16,6 +17,11 @@ export default async function EditSolutionPage({
 }) {
   const organisation = await getMyOrganisation();
   if (!organisation) redirect("/onboarding/about");
+
+  // Onboarding can be broken off after step 1, which is what creates the
+  // organisation. Finish it before anything that assumes it is done.
+  const nextStep = onboardingNextStep(organisation);
+  if (nextStep) redirect(nextStep);
 
   const { id } = await params;
   const [listing, situations] = await Promise.all([

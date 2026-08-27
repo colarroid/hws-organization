@@ -37,6 +37,8 @@ export type MyOrganisation = {
   blurb: string | null;
   status: string;
   verified_at: string | null;
+  /** Set only by onboarding step 3, so it doubles as "verification submitted". */
+  contact_name: string | null;
   /** What HWS last said, when they asked for more or declined. */
   review_note: string | null;
   primaryZoneId: string | null;
@@ -62,7 +64,9 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
 
   const { data: org } = await supabase
     .from("organisations")
-    .select("id, name, type, website, place, blurb, status, verified_at, review_note")
+    .select(
+      "id, name, type, website, place, blurb, status, verified_at, review_note, contact_name",
+    )
     .eq("id", membership.organisation_id)
     .single();
 

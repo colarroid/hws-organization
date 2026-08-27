@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { ResultCard, type ResultCardData } from "@/components/ResultCard";
 import { SubmitForReviewButton } from "@/components/organisations/SubmitForReviewButton";
 import { getMyOrganisation } from "@/lib/data/organisations";
+import { onboardingNextStep } from "@/lib/onboarding";
 import { getListing } from "@/lib/data/listings";
 import { COSTS, FORMATS, SOLUTION_KINDS, labelFor } from "@/lib/design/taxonomy";
 
@@ -31,6 +32,11 @@ export default async function PreviewPage({
 }) {
   const organisation = await getMyOrganisation();
   if (!organisation) redirect("/onboarding/about");
+
+  // Onboarding can be broken off after step 1, which is what creates the
+  // organisation. Finish it before anything that assumes it is done.
+  const nextStep = onboardingNextStep(organisation);
+  if (nextStep) redirect(nextStep);
 
   const { id } = await params;
   const listing = await getListing(id);

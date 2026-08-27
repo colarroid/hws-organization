@@ -5,6 +5,7 @@ import { ArrowLeft, UserPlus } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
+import { onboardingNextStep } from "@/lib/onboarding";
 import { VerificationStatus } from "@/components/organisations/VerificationStatus";
 
 const ROW =
@@ -27,6 +28,11 @@ export default async function OrganisationPage() {
 
   const organisation = await getMyOrganisation();
   if (!organisation) redirect("/onboarding/about");
+
+  // Onboarding can be broken off after step 1, which is what creates the
+  // organisation. Finish it before anything that assumes it is done.
+  const nextStep = onboardingNextStep(organisation);
+  if (nextStep) redirect(nextStep);
 
   const zones = await getAccessZones();
   const primaryZone =
