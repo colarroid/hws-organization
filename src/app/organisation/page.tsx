@@ -39,12 +39,12 @@ export default async function OrganisationPage() {
         My solutions
       </Link>
 
-      <h1 className="m-0 font-display text-[42px] font-medium leading-[1.1] tracking-[-0.01em]">
+      <h1 className="m-0 font-display text-[42px] font-normal leading-[1.1] tracking-[-0.01em]">
         Organisation
       </h1>
 
       <section className="flex flex-col gap-3">
-        <h2 className="m-0 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-60">
+        <h2 className="m-0 eyebrow text-ink-60">
           Verification
         </h2>
         <VerificationStatus
@@ -55,10 +55,10 @@ export default async function OrganisationPage() {
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="m-0 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-60">
+        <h2 className="m-0 eyebrow text-ink-60">
           Details women see
         </h2>
-        <div className="rounded-card border border-ring bg-surface px-[22px] py-1">
+        <div className="rounded-card shadow-hairline bg-surface px-[22px] py-1">
           {[
             { value: organisation.name, href: "/onboarding/about" },
             { value: organisation.place ?? "Not set", href: "/onboarding/about" },
@@ -78,10 +78,10 @@ export default async function OrganisationPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="m-0 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-60">
+        <h2 className="m-0 eyebrow text-ink-60">
           Who can post
         </h2>
-        <div className="rounded-card border border-ring bg-surface px-[22px] py-4">
+        <div className="rounded-card shadow-hairline bg-surface px-[22px] py-4">
           <span className="text-[17px]">
             {user.email} <span className="text-ink-60">· you</span>
           </span>
@@ -90,7 +90,7 @@ export default async function OrganisationPage() {
           type="button"
           disabled
           title="Not built yet"
-          className="inline-flex min-h-[44px] cursor-not-allowed items-center gap-2 self-start rounded-control border border-ring bg-surface px-[18px] py-3 text-[15px] font-bold text-ink opacity-40"
+          className="inline-flex min-h-[44px] cursor-not-allowed items-center gap-2 self-start rounded-control shadow-hairline bg-surface px-[18px] py-3 text-[15px] font-bold text-ink opacity-40"
         >
           <UserPlus size={16} strokeWidth={2} aria-hidden="true" />
           Invite a colleague

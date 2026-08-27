@@ -149,7 +149,7 @@ export default async function DashboardPage({
       ) : null}
 
       <div className="flex flex-col gap-2">
-        <h1 className="m-0 font-display text-[44px] font-medium leading-[1.1] tracking-[-0.01em]">
+        <h1 className="m-0 font-display text-[44px] font-normal leading-[1.1] tracking-[-0.01em]">
           {hasAny ? "My solutions" : organisation.name}
         </h1>
         <span className="text-[16px] text-ink-70">{countLine(listings)}</span>
@@ -165,9 +165,9 @@ export default async function DashboardPage({
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col gap-1 rounded-card border border-ring bg-surface p-5"
+                className="flex flex-col gap-1 rounded-card shadow-hairline bg-surface p-5"
               >
-                <span className="font-display text-[34px] font-semibold leading-none">
+                <span className="font-display text-[34px] font-normal leading-none">
                   {stat.value}
                 </span>
                 <span className="text-[14px] text-ink-65">{stat.label}</span>
@@ -204,8 +204,8 @@ export default async function DashboardPage({
                   aria-current={active ? "page" : undefined}
                   className={`${TAB_PILL} ${
                     active
-                      ? "border-2 border-ink bg-ink font-semibold text-white"
-                      : "border border-ring bg-surface font-semibold text-ink hover:border-gold-500"
+                      ? "shadow-hairline-ink bg-ink font-semibold text-white"
+                      : "shadow-hairline bg-surface font-semibold text-ink transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold"
                   }`}
                 >
                   {label}
@@ -218,12 +218,12 @@ export default async function DashboardPage({
             {visible.map((listing) => (
               <article
                 key={listing.id}
-                className="flex flex-col gap-[14px] rounded-card border border-ring bg-surface p-6"
+                className="flex flex-col gap-[14px] rounded-card shadow-hairline bg-surface p-6"
               >
                 <div className="flex flex-wrap items-start justify-between gap-5">
                   <div className="flex flex-col gap-2">
                     <StatusPill status={listing.status} />
-                    <span className="text-[20px] font-bold leading-[1.3]">
+                    <span className="font-display text-[20px] font-normal leading-[1.3]">
                       {listing.name}
                     </span>
                     <span className="text-[15px] text-ink-65">
@@ -279,11 +279,11 @@ export default async function DashboardPage({
         /* The definition here is the most important copy in the organisation
            flow. Organisations naturally bundle everything into one listing,
            which destroys matching. */
-        <div className="flex max-w-[62ch] flex-col items-start gap-[18px] rounded-card-lg border border-ring bg-surface p-11">
+        <div className="flex max-w-[62ch] flex-col items-start gap-[18px] rounded-card-lg shadow-hairline bg-surface p-11">
           <span className="flex text-gold-500">
             <FilePlus2 size={30} strokeWidth={2} aria-hidden="true" />
           </span>
-          <h2 className="m-0 font-display text-[28px] font-medium leading-[1.2]">
+          <h2 className="m-0 font-display text-[28px] font-normal leading-[1.2]">
             Post your first solution
           </h2>
           <p className="m-0 text-[17px] leading-[1.6] text-ink-70">

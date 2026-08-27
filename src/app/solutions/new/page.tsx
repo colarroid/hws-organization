@@ -22,7 +22,7 @@ export default async function NewSolutionPage() {
       </Link>
 
       <div className="flex flex-col gap-[10px]">
-        <h1 className="m-0 font-display text-[42px] font-medium leading-[1.1] tracking-[-0.01em]">
+        <h1 className="m-0 font-display text-[42px] font-normal leading-[1.1] tracking-[-0.01em]">
           Post a solution
         </h1>
         <p className="m-0 text-[17px] leading-[1.55] text-ink-70">

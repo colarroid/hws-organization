@@ -75,7 +75,7 @@ export default async function PreviewPage({
       </Link>
 
       <div className="flex flex-col gap-[10px]">
-        <h1 className="m-0 font-display text-[40px] font-medium leading-[1.1] tracking-[-0.01em]">
+        <h1 className="m-0 font-display text-[40px] font-normal leading-[1.1] tracking-[-0.01em]">
           How she will see it
         </h1>
         {/* Sets the expectation before anyone asks to control the reason. */}

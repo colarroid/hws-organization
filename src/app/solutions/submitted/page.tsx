@@ -16,7 +16,7 @@ export default function SubmittedPage() {
         <BadgeCheck size={40} strokeWidth={2} aria-hidden="true" />
       </span>
 
-      <h1 className="m-0 font-display text-[40px] font-medium leading-[1.1] tracking-[-0.01em]">
+      <h1 className="m-0 font-display text-[40px] font-normal leading-[1.1] tracking-[-0.01em]">
         Submitted for review
       </h1>
 
@@ -26,7 +26,7 @@ export default function SubmittedPage() {
         something.
       </p>
 
-      <div className="flex flex-col gap-[10px] rounded-card border border-ring bg-surface px-[22px] py-5">
+      <div className="flex flex-col gap-[10px] rounded-card shadow-hairline bg-surface px-[22px] py-5">
         <span className="text-[16px] font-bold">What we check</span>
         <span className="text-[15px] leading-[1.6] text-ink-70">
           That the eligibility is clear, the dates are real, the link works, and

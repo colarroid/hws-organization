@@ -45,7 +45,7 @@ export default async function ConfirmPage({
       </span>
 
       <div className="flex flex-col gap-[10px]">
-        <h1 className="m-0 font-display text-[40px] font-medium leading-[1.1] tracking-[-0.01em]">
+        <h1 className="m-0 font-display text-[40px] font-normal leading-[1.1] tracking-[-0.01em]">
           Confirm your email
         </h1>
         <p className="m-0 text-[17px] leading-[1.6] text-ink-70">
@@ -54,7 +54,7 @@ export default async function ConfirmPage({
         </p>
       </div>
 
-      <div className="flex flex-col gap-[10px] rounded-card border border-ring bg-surface px-[22px] py-5">
+      <div className="flex flex-col gap-[10px] rounded-card shadow-hairline bg-surface px-[22px] py-5">
         <span className="text-[16px] font-bold">Why we confirm it</span>
         <span className="text-[15px] leading-[1.6] text-ink-70">
           Every listing you post carries your organisation&apos;s name.

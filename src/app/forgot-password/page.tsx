@@ -44,7 +44,7 @@ export default async function ForgotPasswordPage({
           <span className="flex text-gold-500">
             <Mail size={36} strokeWidth={2} aria-hidden="true" />
           </span>
-          <h1 className="m-0 font-display text-[38px] font-medium leading-[1.1] tracking-[-0.01em]">
+          <h1 className="m-0 font-display text-[38px] font-normal leading-[1.1] tracking-[-0.01em]">
             Check your email
           </h1>
           <p className="m-0 text-[17px] leading-[1.6] text-ink-70">

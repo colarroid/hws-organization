@@ -75,7 +75,7 @@ export function ZonesPicker({
       ))}
 
       <div className="flex flex-col gap-3">
-        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-ink-60">
+        <span className="eyebrow text-ink-60">
           Your primary zone
         </span>
 
@@ -94,10 +94,10 @@ export function ZonesPicker({
                 className={[
                   "flex cursor-pointer flex-col gap-[5px] rounded-card p-[18px] text-left",
                   isPrimary
-                    ? "border-2 border-ink bg-ink text-white"
+                    ? "shadow-hairline-ink bg-ink text-white"
                     : isAlso
                       ? "border border-gold-300 bg-gold-200 text-ink"
-                      : "border border-ring bg-surface text-ink hover:border-gold-500",
+                      : "shadow-hairline bg-surface text-ink transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold",
                 ].join(" ")}
               >
                 <span className="flex items-center justify-between gap-[10px]">
@@ -107,7 +107,7 @@ export function ZonesPicker({
                   {role ? (
                     <span
                       className={[
-                        "whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.1em]",
+                        "whitespace-nowrap eyebrow",
                         isPrimary ? "text-white/75" : "text-gold-700",
                       ].join(" ")}
                     >

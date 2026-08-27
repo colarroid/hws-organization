@@ -14,14 +14,14 @@ type OrgHeaderProps = {
  * Full width on the row, full width of the panel on mobile.
  */
 const NAV_PILL =
-  "inline-flex items-center gap-2 min-h-[44px] rounded-full border border-ring " +
+  "inline-flex items-center gap-2 min-h-[44px] rounded-full shadow-hairline " +
   "px-4 py-[9px] text-[15px] font-semibold text-ink no-underline " +
-  "transition-colors duration-150 ease-out hover:border-gold-500";
+  "transition-[color,background-color,box-shadow] duration-150 ease-out hover:shadow-hairline-gold";
 
 const NAV_PRIMARY =
   "inline-flex items-center gap-2 min-h-[44px] rounded-full bg-ink " +
   "px-[18px] py-[10px] text-[15px] font-bold text-white no-underline " +
-  "transition-colors duration-150 ease-out hover:opacity-90";
+  "transition-[color,background-color,box-shadow] duration-150 ease-out hover:opacity-90";
 
 function NavLinks({ liveCount }: { liveCount: number }) {
   return (

@@ -31,7 +31,7 @@ const HINT_TONE: Record<HintTone, string> = {
 
 type FieldProps = {
   label: string;
-  /** The primary field on a screen carries a 1.5px ink border. */
+  /** The primary field on a screen carries a 2px ink ring. */
   emphasis?: boolean;
   hint?: ReactNode;
   hintTone?: HintTone;
@@ -59,11 +59,11 @@ export function Field({
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
 
-  const border = error
-    ? "border-[1.5px] border-red-700"
+  const edge = error
+    ? "shadow-hairline-red"
     : emphasis
-      ? "border-[1.5px] border-ink"
-      : "border border-ring";
+      ? "shadow-hairline-ink"
+      : "shadow-hairline";
 
   const describedBy =
     [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||
@@ -79,7 +79,7 @@ export function Field({
         id={id}
         aria-describedby={describedBy}
         aria-invalid={error ? true : undefined}
-        className={`${border} rounded-control bg-surface text-ink text-[17px] p-4 min-h-[44px]`}
+        className={`${edge} rounded-control bg-surface text-ink text-[17px] p-4 min-h-[44px]`}
         {...props}
       />
       {/* Errors sit beneath the field with a message, never a bare red border. */}
@@ -120,11 +120,11 @@ export function TextAreaField({
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
 
-  const border = error
-    ? "border-[1.5px] border-red-700"
+  const edge = error
+    ? "shadow-hairline-red"
     : emphasis
-      ? "border-[1.5px] border-ink"
-      : "border border-ring";
+      ? "shadow-hairline-ink"
+      : "shadow-hairline";
 
   const describedBy =
     [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||
@@ -140,7 +140,7 @@ export function TextAreaField({
         id={id}
         aria-describedby={describedBy}
         aria-invalid={error ? true : undefined}
-        className={`${border} rounded-control bg-surface text-ink text-[17px] p-4 resize-y`}
+        className={`${edge} rounded-control bg-surface text-ink text-[17px] p-4 resize-y`}
         {...props}
       />
       {error ? (
@@ -192,11 +192,11 @@ export function PasswordField({
   const errorId = `${id}-error`;
   const [visible, setVisible] = useState(false);
 
-  const border = error
-    ? "border-[1.5px] border-red-700"
+  const edge = error
+    ? "shadow-hairline-red"
     : emphasis
-      ? "border-[1.5px] border-ink"
-      : "border border-ring";
+      ? "shadow-hairline-ink"
+      : "shadow-hairline";
 
   const describedBy =
     [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||
@@ -215,7 +215,7 @@ export function PasswordField({
           type={visible ? "text" : "password"}
           aria-describedby={describedBy}
           aria-invalid={error ? true : undefined}
-          className={`${border} w-full rounded-control bg-surface p-4 pr-14 text-[17px] text-ink min-h-[44px]`}
+          className={`${edge} w-full rounded-control bg-surface p-4 pr-14 text-[17px] text-ink min-h-[44px]`}
           {...props}
         />
         <button

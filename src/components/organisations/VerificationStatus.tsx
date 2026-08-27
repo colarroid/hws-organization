@@ -29,7 +29,7 @@ export function VerificationStatus({
 }) {
   if (status === "verified") {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-ring bg-surface px-[22px] py-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-card shadow-hairline bg-surface px-[22px] py-5">
         <span className="flex items-center gap-[10px] text-[16px] font-semibold text-green-700">
           <BadgeCheck size={18} strokeWidth={2} aria-hidden="true" />
           Verified
