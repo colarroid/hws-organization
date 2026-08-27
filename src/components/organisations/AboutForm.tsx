@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Field, TextAreaField } from "@/components/ui/Field";
+import { PlaceField } from "@/components/ui/PlaceField";
 import { Chip, ChipGroup } from "@/components/ui/Chip";
 import { FormError, SubmitButton } from "@/components/ui/Form";
 import { ORGANISATION_TYPES } from "@/lib/design/taxonomy";
@@ -70,7 +71,7 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
           />
         </div>
         <div className="flex-1">
-          <Field
+          <PlaceField
             label="Where you are based"
             name="place"
             defaultValue={organisation?.place ?? ""}
