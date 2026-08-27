@@ -4,8 +4,7 @@ import type { ReactNode } from "react";
 import { Page } from "@/components/ui/Page";
 
 type OnboardingShellProps = {
-  /** 1, 2 or 3. Step 4 is the dashboard itself, which is why the bar can
-   *  reach 100% without a fourth screen existing. */
+  /** 1, 2 or 3. There is no fourth screen. */
   step: 1 | 2 | 3;
   backHref: string;
   title: string;
@@ -14,7 +13,17 @@ type OnboardingShellProps = {
   children: ReactNode;
 };
 
-const TOTAL_STEPS = 4;
+/**
+ * Three, because there are three screens.
+ *
+ * This counted to four so the bar could fill completely, treating the
+ * dashboard as a fourth step. The bar was the wrong thing to optimise: the
+ * counter beside it was promising a form that does not exist. The woman-facing
+ * flow already settles this, moving in thirds across three questions and
+ * reaching 100% on the last one, and decision 5 rejects "of 4" for the same
+ * reason on that side.
+ */
+const TOTAL_STEPS = 3;
 
 export function OnboardingShell({
   step,
