@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { OrgHeader } from "@/components/organisations/OrgHeader";
+import { OrgSidebar } from "@/components/organisations/OrgSidebar";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { getListings } from "@/lib/data/listings";
 import { createClient } from "@/lib/supabase/server";
@@ -61,13 +62,23 @@ export default async function RootLayout({
   return (
     <html lang="en-GB" className={`${playfair.variable} ${inter.variable}`}>
       <body>
-        <div className="flex min-h-screen flex-col bg-ground text-ink">
-          <OrgHeader
-            signedIn={Boolean(user)}
-            hasOrganisation={Boolean(organisation)}
-            liveCount={liveCount}
-          />
-          <main className="flex flex-1 flex-col">{children}</main>
+        {/*
+          The rail appears only once there is an organisation to navigate.
+          Before that, onboarding is a single column with nothing to move
+          between, and a rail full of places you cannot go yet is furniture
+          that only makes the flow look longer.
+        */}
+        <div className="flex min-h-screen bg-ground text-ink">
+          {organisation ? <OrgSidebar liveCount={liveCount} /> : null}
+
+          <div className="flex min-w-0 flex-1 flex-col">
+            <OrgHeader
+              signedIn={Boolean(user)}
+              hasOrganisation={Boolean(organisation)}
+              liveCount={liveCount}
+            />
+            <main className="flex flex-1 flex-col">{children}</main>
+          </div>
         </div>
       </body>
     </html>

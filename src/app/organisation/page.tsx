@@ -41,7 +41,7 @@ export default async function OrganisationPage() {
   return (
     <Page width={660} top={56} gap={30}>
       <Link
-        href="/dashboard"
+        href="/solutions"
         className="inline-flex min-h-[44px] items-center gap-[6px] self-start text-[14px] font-bold text-ink no-underline"
       >
         <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />

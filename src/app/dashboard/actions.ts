@@ -43,4 +43,5 @@ export async function confirmFreshness(listingId: string) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/solutions");
 }

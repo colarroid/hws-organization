@@ -43,7 +43,7 @@ export default function SubmittedPage() {
           Post another solution
         </ButtonLink>
         <ButtonLink
-          href="/dashboard"
+          href="/solutions"
           variant="secondary"
           size="inline"
           className="px-[22px] py-[15px] text-[16px]"

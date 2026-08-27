@@ -136,9 +136,12 @@ export async function saveSolution(
   const result = await save(formData);
   if ("error" in result) return result;
 
+  // Both, since the figures live on Overview and the listing itself lives
+  // on My solutions.
   revalidatePath("/dashboard");
+  revalidatePath("/solutions");
 
-  if (formData.get("intent") === "draft") redirect("/dashboard");
+  if (formData.get("intent") === "draft") redirect("/solutions");
 
   redirect(`/solutions/${result.listingId}/preview`);
 }
@@ -176,5 +179,6 @@ export async function submitForReview(listingId: string) {
   if (error) throw new Error(`Could not submit the listing: ${error.message}`);
 
   revalidatePath("/dashboard");
+  revalidatePath("/solutions");
   redirect("/solutions/submitted");
 }
