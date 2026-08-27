@@ -136,26 +136,6 @@ export function ZonesPicker({
         </span>
       </div>
 
-      {/* Load-bearing. Housing, safety and rights, new Scots and caring have
-          no zone, so this panel is the only way those organisations can list
-          at all, and it has to reach a person. */}
-      <div className="flex flex-col gap-2 rounded-card border border-gold-300 bg-gold-200 px-5 py-[18px]">
-        <span className="text-[16px] font-bold text-gold-700">
-          None of these fit?
-        </span>
-        <span className="text-[15px] leading-[1.55] text-gold-700">
-          Housing, safety and rights, support for new Scots, and caring and
-          family life do not have a zone yet. Tell us what you do and we will
-          route your listing by hand while we sort this out.
-        </span>
-        <a
-          href="/hand-routing"
-          className="mt-1 self-start p-1 text-[15px] font-bold text-gold-700"
-        >
-          Tell us what you do
-        </a>
-      </div>
-
       <SubmitButton>Next</SubmitButton>
     </form>
   );
