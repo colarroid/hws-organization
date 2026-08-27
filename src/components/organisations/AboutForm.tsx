@@ -36,7 +36,7 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
         name="name"
         required
         defaultValue={organisation?.name ?? ""}
-        placeholder="e.g. Return to Work West Lothian"
+        placeholder="Your organisation's name"
       />
 
       <div className="flex flex-col gap-[10px]">
