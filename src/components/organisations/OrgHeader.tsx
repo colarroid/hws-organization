@@ -110,30 +110,24 @@ export function OrgHeader({
           wide screen while the page beneath still runs to the edges.
         */}
         <div className="flex w-full items-center justify-between gap-6 px-5 py-[18px] sm:px-8 lg:px-10">
-          <div className="flex min-w-0 items-center gap-[14px]">
-            {/* The name is on the link and alt is empty, so it is announced
-                once, as the thing it does, rather than twice. */}
-            <Link
-              href="/"
-              aria-label="HWS Pathgrid, home"
-              className="flex shrink-0 items-center no-underline"
-            >
-              <Image
-                src="/logo.svg"
-                alt=""
-                width={100}
-                height={36}
-                priority
-                // Served as authored. The image optimiser does not process
-                // SVG, and there is nothing to gain from it on a 5KB vector.
-                unoptimized
-              />
-            </Link>
-            {/* Drops on the narrowest screens so the logo and the control fit. */}
-            <span className="hidden rounded-full border border-gold-300 bg-gold-200 px-3 py-1 text-[13px] font-semibold text-gold-700 sm:inline">
-              For organisations
-            </span>
-          </div>
+          {/* The name is on the link and alt is empty, so it is announced
+              once, as the thing it does, rather than twice. */}
+          <Link
+            href="/"
+            aria-label="HWS Pathgrid, home"
+            className="flex shrink-0 items-center no-underline"
+          >
+            <Image
+              src="/logo.svg"
+              alt=""
+              width={100}
+              height={36}
+              priority
+              // Served as authored. The image optimiser does not process
+              // SVG, and there is nothing to gain from it on a 5KB vector.
+              unoptimized
+            />
+          </Link>
 
           {!signedIn ? null : hasOrganisation ? (
             <>
