@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { resendConfirmation } from "@/app/actions";
 
@@ -16,6 +17,7 @@ export function ResendLink({ email }: { email?: string }) {
   const [remaining, setRemaining] = useState(COOLDOWN_SECONDS);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signIn, setSignIn] = useState(false);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -48,10 +50,12 @@ export function ResendLink({ email }: { email?: string }) {
                 setRemaining(COOLDOWN_SECONDS);
                 if (result.ok) {
                   setError(null);
+                  setSignIn(false);
                   setSent(true);
                 } else {
                   setSent(false);
                   setError(result.error);
+                  setSignIn(Boolean(result.signIn));
                 }
               })
             }
@@ -61,7 +65,21 @@ export function ResendLink({ email }: { email?: string }) {
           </button>
         </>
       ) : error ? (
-        <span className="text-red-700">{error}</span>
+        <span className="text-red-700">
+          {error}
+          {/* Never a dead end: the one failure with an obvious way onward
+              says so, rather than leaving her on a screen waiting for an
+              email that is never coming because she does not need it. */}
+          {signIn ? (
+            <>
+              {" "}
+              <Link href="/sign-in" className="font-bold text-gold-700">
+                Sign in
+              </Link>
+              .
+            </>
+          ) : null}
+        </span>
       ) : sent ? (
         <span>Sent again. It can take a minute to arrive.</span>
       ) : (

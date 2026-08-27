@@ -154,7 +154,9 @@ export async function setNewPassword(
   redirect("/");
 }
 
-export type ResendResult = { ok: true } | { ok: false; error: string };
+export type ResendResult =
+  | { ok: true }
+  | { ok: false; error: string; signIn?: boolean };
 
 /**
  * Re-send the confirmation email. Rate limiting is Supabase's own.
@@ -186,6 +188,15 @@ export async function resendConfirmation(
 
   if (!error) return { ok: true };
 
+  // When this fails nothing reaches the mail provider at all, so its
+  // dashboard shows no trace and this line is the only record of why. The
+  // address itself is deliberately left out of it.
+  console.error("resendConfirmation failed", {
+    code: error.code,
+    status: error.status,
+    message: error.message,
+  });
+
   if (error.status === 429 || error.code === "over_email_send_rate_limit") {
     return {
       ok: false,
@@ -194,13 +205,18 @@ export async function resendConfirmation(
     };
   }
 
-  // Supabase says this when the address is already confirmed, which means
-  // she can simply sign in. Sending her back to sign-up would be the wrong
-  // door entirely.
-  if (error.code === "email_address_already_confirmed") {
+  // Already confirmed, which means she can simply sign in. Matched on the
+  // message as well as the code: this is the likeliest failure of the three,
+  // it happens whenever she opened the link on another device, and the code
+  // string is not worth staking the right wording on.
+  if (
+    error.code === "email_address_already_confirmed" ||
+    /already .*confirmed|already registered/i.test(error.message ?? "")
+  ) {
     return {
       ok: false,
-      error: "This address is already confirmed. You can sign in.",
+      error: "This address is already confirmed.",
+      signIn: true,
     };
   }
 
