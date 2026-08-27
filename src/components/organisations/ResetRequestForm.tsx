@@ -33,7 +33,6 @@ export function ResetRequestForm() {
           type="email"
           autoComplete="email"
           placeholder="you@organisation.org"
-          emphasis
           required
         />
         <SubmitButton>Send me a reset link</SubmitButton>

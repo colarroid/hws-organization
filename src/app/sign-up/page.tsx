@@ -43,7 +43,6 @@ export default function SignUpPage() {
           type="email"
           autoComplete="email"
           placeholder="you@organisation.org"
-          emphasis
           required
           hint="Use an address at your organisation's domain if you have one. It speeds up verification."
         />

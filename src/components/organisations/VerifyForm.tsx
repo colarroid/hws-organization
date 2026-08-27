@@ -27,7 +27,6 @@ export function VerifyForm({ organisationId }: { organisationId: string }) {
       <Field
         label="Charity or company number"
         name="registrationNumber"
-        emphasis
         placeholder="e.g. SC012345"
         hint="Not registered? Tell us who funds you instead and we will follow up."
       />

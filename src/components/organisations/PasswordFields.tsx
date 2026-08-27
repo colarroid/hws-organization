@@ -42,7 +42,6 @@ export function PasswordFields({
         name="password"
         autoComplete="new-password"
         placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
-        emphasis={passwordLabel === "New password"}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         hint={hint}

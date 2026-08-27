@@ -71,7 +71,6 @@ export function SolutionForm({
         <Field
           label="What is it called?"
           name="name"
-          emphasis
           required
           defaultValue={listing?.name ?? ""}
           placeholder="e.g. Return to Work programme"

@@ -33,7 +33,6 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
       <Field
         label="Organisation name"
         name="name"
-        emphasis
         required
         defaultValue={organisation?.name ?? ""}
         placeholder="e.g. Return to Work West Lothian"

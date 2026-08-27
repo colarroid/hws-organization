@@ -31,11 +31,9 @@ const HINT_TONE: Record<HintTone, string> = {
 
 type FieldProps = {
   label: string;
-  /** The primary field on a screen carries a 2px ink ring. */
-  emphasis?: boolean;
   hint?: ReactNode;
   hintTone?: HintTone;
-  /** Shown beneath the field, in red, with the border turning red too. */
+  /** Shown beneath the field, in red, with the ring turning red too. */
   error?: string;
 } & Omit<ComponentPropsWithoutRef<"input">, "className">;
 
@@ -49,7 +47,6 @@ type FieldProps = {
  */
 export function Field({
   label,
-  emphasis = false,
   hint,
   hintTone = "muted",
   error,
@@ -59,11 +56,9 @@ export function Field({
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
 
-  const edge = error
-    ? "shadow-hairline-red"
-    : emphasis
-      ? "shadow-hairline-ink"
-      : "shadow-hairline";
+  // Only an error changes the resting edge. A field is never drawn as though
+  // it were focused before she has touched it.
+  const edge = error ? "shadow-hairline-red" : "shadow-hairline";
 
   const describedBy =
     [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||
@@ -102,7 +97,6 @@ export function Field({
 
 type TextAreaProps = {
   label: string;
-  emphasis?: boolean;
   hint?: ReactNode;
   hintTone?: HintTone;
   error?: string;
@@ -110,7 +104,6 @@ type TextAreaProps = {
 
 export function TextAreaField({
   label,
-  emphasis = false,
   hint,
   hintTone = "muted",
   error,
@@ -120,11 +113,9 @@ export function TextAreaField({
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
 
-  const edge = error
-    ? "shadow-hairline-red"
-    : emphasis
-      ? "shadow-hairline-ink"
-      : "shadow-hairline";
+  // Only an error changes the resting edge. A field is never drawn as though
+  // it were focused before she has touched it.
+  const edge = error ? "shadow-hairline-red" : "shadow-hairline";
 
   const describedBy =
     [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||
@@ -162,7 +153,6 @@ export function TextAreaField({
 
 type PasswordFieldProps = {
   label: string;
-  emphasis?: boolean;
   hint?: ReactNode;
   hintTone?: HintTone;
   error?: string;
@@ -181,7 +171,6 @@ type PasswordFieldProps = {
  */
 export function PasswordField({
   label,
-  emphasis = false,
   hint,
   hintTone = "muted",
   error,
@@ -192,11 +181,9 @@ export function PasswordField({
   const errorId = `${id}-error`;
   const [visible, setVisible] = useState(false);
 
-  const edge = error
-    ? "shadow-hairline-red"
-    : emphasis
-      ? "shadow-hairline-ink"
-      : "shadow-hairline";
+  // Only an error changes the resting edge. A field is never drawn as though
+  // it were focused before she has touched it.
+  const edge = error ? "shadow-hairline-red" : "shadow-hairline";
 
   const describedBy =
     [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||

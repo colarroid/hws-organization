@@ -50,7 +50,6 @@ function SignInScreen() {
           type="email"
           autoComplete="email"
           placeholder="you@organisation.org"
-          emphasis
           required
         />
 
