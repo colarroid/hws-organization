@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s | HWS Portal",
   },
   description:
-    "Reach women across Scotland who are looking for exactly what you offer. Listing is free, and nobody pays for placement.",
+    "Reach women across Scotland who are looking for exactly what you offer.",
 };
 
 export default async function RootLayout({
