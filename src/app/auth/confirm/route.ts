@@ -17,6 +17,11 @@ import { clearPending } from "@/app/actions";
  * A failed link goes to sign-in, never to sign-up. Someone who has just
  * created an account and is being shown "create an account" reasonably
  * concludes it did not work and makes a second one.
+ *
+ * A good one goes to /confirmed, signed out. Verifying creates a session, but
+ * on whichever device opened the mail, which is frequently not the one she is
+ * working on. The link's job is to confirm the address; signing in is a
+ * separate step and belongs to her.
  */
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -49,14 +54,11 @@ export async function GET(request: NextRequest) {
   // that Supabase would now refuse.
   await clearPending();
 
-  // Onboarding if they have not started, their dashboard if they have.
-  const { data: membership } = await supabase
-    .from("organisation_members")
-    .select("organisation_id")
-    .limit(1)
-    .maybeSingle();
+  // Verifying signs her in, and this often runs on the wrong device: people
+  // open email on a phone having signed up on a laptop. Ending the session
+  // here means the link confirms the address and nothing more, and never
+  // leaves an account open on whatever happened to open the message.
+  await supabase.auth.signOut();
 
-  return NextResponse.redirect(
-    `${origin}${membership ? "/dashboard" : "/onboarding/about"}`,
-  );
+  return NextResponse.redirect(`${origin}/confirmed`);
 }
