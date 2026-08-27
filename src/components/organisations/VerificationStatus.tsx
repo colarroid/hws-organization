@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BadgeCheck, Clock, TriangleAlert } from "lucide-react";
 
 const DATE = new Intl.DateTimeFormat("en-GB", {
@@ -86,12 +85,6 @@ export function VerificationStatus({
         <Clock size={18} strokeWidth={2} aria-hidden="true" />
         Verification in progress
       </span>
-      <Link
-        href="/onboarding/verify"
-        className="p-1 text-[15px] font-bold text-gold-700 no-underline"
-      >
-        Check what we have
-      </Link>
     </div>
   );
 }
