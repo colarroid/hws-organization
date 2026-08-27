@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
 import { onboardingNextStep } from "@/lib/onboarding";
 import { VerificationStatus } from "@/components/organisations/VerificationStatus";
+import { InviteColleagueForm } from "@/components/organisations/InviteForms";
+import { revokeInvitation } from "@/app/organisation/actions";
 
 const ROW =
   "flex flex-wrap items-center justify-between gap-4 border-b border-hairline-soft py-4 last:border-b-0";
@@ -33,6 +35,16 @@ export default async function OrganisationPage() {
   // organisation. Finish it before anything that assumes it is done.
   const nextStep = onboardingNextStep(organisation);
   if (nextStep) redirect(nextStep);
+
+  // Invitations that have not been taken up. Shown so nobody wonders whether
+  // the email went, and so a wrong address can be withdrawn rather than left
+  // sitting there.
+  const { data: pending } = await supabase
+    .from("organisation_invitations")
+    .select("id, email")
+    .eq("organisation_id", organisation.id)
+    .is("accepted_at", null)
+    .order("created_at");
 
   const zones = await getAccessZones();
   const primaryZone =
@@ -88,19 +100,46 @@ export default async function OrganisationPage() {
             {user.email} <span className="text-ink-60">· you</span>
           </span>
         </div>
-        <button
-          type="button"
-          disabled
-          title="Not built yet"
-          className="inline-flex min-h-[44px] cursor-not-allowed items-center gap-2 self-start rounded-control shadow-hairline bg-surface px-[18px] py-3 text-[15px] font-bold text-ink opacity-40"
-        >
-          <UserPlus size={16} strokeWidth={2} aria-hidden="true" />
-          Invite a colleague
-        </button>
-        <span className="text-[14px] leading-[1.5] text-ink-60">
-          Anyone you invite can post and edit listings for this organisation.
-          Verification stays with the organisation, not the person.
-        </span>
+        {(pending ?? []).length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {(pending ?? []).map((invitation) => (
+              <div
+                key={invitation.id}
+                className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-gold-300 bg-gold-200 px-[22px] py-4"
+              >
+                <span className="text-[16px] text-gold-700">
+                  {invitation.email}{" "}
+                  <span className="text-[15px]">· invited, not joined yet</span>
+                </span>
+                {/* Withdrawing is the only control here. Resending is
+                    inviting again, which replaces the link rather than
+                    leaving two that both work. */}
+                <form action={revokeInvitation}>
+                  <input type="hidden" name="invitationId" value={invitation.id} />
+                  <button
+                    type="submit"
+                    className="min-h-[44px] cursor-pointer border-0 bg-transparent p-1 text-[15px] font-bold text-gold-700"
+                  >
+                    Withdraw
+                  </button>
+                </form>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-3 rounded-card shadow-hairline bg-surface px-[22px] py-5">
+          <span className="inline-flex items-center gap-2 text-[16px] font-bold">
+            <UserPlus size={17} strokeWidth={2} aria-hidden="true" />
+            Invite a colleague
+          </span>
+          <span className="max-w-[52ch] text-[14px] leading-[1.5] text-ink-60">
+            They can post and edit listings for this organisation. Verification
+            stays with the organisation, not the person, so there is nothing
+            for them to prove again.
+          </span>
+          <InviteColleagueForm />
+        </div>
       </section>
     </Page>
   );
