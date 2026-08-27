@@ -128,7 +128,7 @@ export function PlaceField({
           aria-activedescendant={
             active >= 0 ? `${listId}-${active}` : undefined
           }
-          aria-describedby={hintId}
+          aria-describedby={unrecognised ? hintId : undefined}
           autoComplete="off"
           placeholder={placeholder}
           onChange={(e) => {
@@ -173,11 +173,15 @@ export function PlaceField({
         ) : null}
       </div>
 
-      <span id={hintId} className="text-[14px] leading-[1.5] text-ink-60">
-        {unrecognised
-          ? "We don't know that place yet. We'll keep what you typed, and women searching nearby towns can still find you."
-          : "Start typing a town or council area, then pick from the list. This is how women searching your area find you."}
-      </span>
+      {/* Only when there is something to say. A standing instruction sat
+          under one half of a two-column row and unbalanced it, and the
+          suggestions teach the interaction better than a sentence about them
+          does: they appear as she types. */}
+      {unrecognised ? (
+        <span id={hintId} className="text-[14px] leading-[1.5] text-ink-60">
+          We don&apos;t know that place yet, so we&apos;ll keep what you typed.
+        </span>
+      ) : null}
     </div>
   );
 }

@@ -75,7 +75,7 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
             label="Where you are based"
             name="place"
             defaultValue={organisation?.place ?? ""}
-            placeholder="e.g. Bathgate"
+            placeholder="e.g. Glasgow City"
           />
         </div>
       </div>
