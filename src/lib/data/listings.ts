@@ -19,6 +19,9 @@ export type Listing = {
   deadline: string | null;
   status: ListingStatus;
   last_confirmed_at: string | null;
+  /** Set when an admin has taken it off every woman-facing surface. */
+  hidden_at: string | null;
+  hidden_reason: string | null;
 };
 
 export async function getListings(organisationId: string): Promise<Listing[]> {
@@ -27,7 +30,7 @@ export async function getListings(organisationId: string): Promise<Listing[]> {
   const { data, error } = await supabase
     .from("listings")
     .select(
-      "id, name, kind, cost, formats, place, deadline, status, last_confirmed_at",
+      "id, name, kind, cost, formats, place, deadline, status, last_confirmed_at, hidden_at, hidden_reason",
     )
     .eq("organisation_id", organisationId)
     .order("created_at", { ascending: false });
@@ -98,6 +101,9 @@ export function staleListings(listings: Listing[]): Listing[] {
 
   return listings.filter((listing) => {
     if (listing.status !== "live") return false;
+    // A hidden listing reaches nobody, so nagging about its freshness is
+    // noise on top of a problem the organisation cannot fix by confirming.
+    if (listing.hidden_at) return false;
     if (!listing.last_confirmed_at) return true;
     return new Date(listing.last_confirmed_at) < cutoff;
   });
@@ -119,7 +125,7 @@ export async function getListing(id: string): Promise<ListingDetail | null> {
   const { data } = await supabase
     .from("listings")
     .select(
-      "id, organisation_id, name, kind, blurb, who_for, what_to_expect, cost, formats, place, deadline, apply_url, status, last_confirmed_at",
+      "id, organisation_id, name, kind, blurb, who_for, what_to_expect, cost, formats, place, deadline, apply_url, status, last_confirmed_at, hidden_at, hidden_reason",
     )
     .eq("id", id)
     .maybeSingle();

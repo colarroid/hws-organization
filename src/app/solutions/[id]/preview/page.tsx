@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, EyeOff } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { ButtonLink } from "@/components/ui/Button";
 import { ResultCard, type ResultCardData } from "@/components/ResultCard";
@@ -93,6 +93,20 @@ export default async function PreviewPage({
           from her answers, not by you.
         </p>
       </div>
+
+      {/* The heading above promises this is what she sees. While it is hidden
+          that is not true, and saying so here is cheaper than letting someone
+          wonder why a perfect-looking card gets no views. */}
+      {listing.hidden_at ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-card border border-red-200 bg-red-50 px-[22px] py-5">
+          <EyeOff size={20} strokeWidth={2} className="shrink-0 text-red-700" aria-hidden="true" />
+          <span className="text-[16px] leading-[1.5] text-red-700">
+            <strong>She is not seeing it at the moment.</strong>{" "}
+            We have taken it down while something is sorted. The reason is on
+            your solutions list.
+          </span>
+        </div>
+      ) : null}
 
       <ResultCard data={card} strongest showGaps />
 

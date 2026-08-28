@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Clock, FilePlus2, TriangleAlert } from "lucide-react";
+import { ArrowRight, Clock, EyeOff, FilePlus2, TriangleAlert } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { ButtonLink } from "@/components/ui/Button";
 import { Banner } from "@/components/organisations/Banner";
@@ -51,6 +51,8 @@ export default async function OverviewPage() {
   const statsByListing = await getStatsByListing(listings.map((l) => l.id));
   const stats = sumStats(statsByListing);
   const stale = staleListings(listings);
+  // Reaches nobody until it is sorted, so it outranks a freshness nudge.
+  const takenDown = listings.filter((l) => l.hidden_at);
   const hasAny = listings.length > 0;
 
   return (
@@ -109,6 +111,28 @@ export default async function OverviewPage() {
               </div>
             ))}
           </div>
+
+          {takenDown.length > 0 ? (
+            <Banner
+              tone="warning"
+              icon={<EyeOff size={20} strokeWidth={2} />}
+              title={
+                takenDown.length === 1
+                  ? `name is not showing to women`
+                  : ` listings are not showing to women`
+              }
+              note={takenDown.length === 1 ? takenDown[0].hidden_reason : null}
+              action={
+                <ButtonLink href="/solutions" variant="secondary" size="inline">
+                  See which
+                </ButtonLink>
+              }
+            >
+              We have taken {takenDown.length === 1 ? "it" : "them"} down while
+              something is sorted. Nothing is lost, and it goes back up once it
+              is fixed.
+            </Banner>
+          ) : null}
 
           {stale.length > 0 ? (
             <Banner

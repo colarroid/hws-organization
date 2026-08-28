@@ -129,7 +129,10 @@ export default async function SolutionsPage({
               >
                 <div className="flex flex-wrap items-start justify-between gap-5">
                   <div className="flex flex-col gap-2">
-                    <StatusPill status={listing.status} />
+                    <StatusPill
+                      status={listing.status}
+                      hidden={Boolean(listing.hidden_at)}
+                    />
                     <span className="font-display text-[20px] font-normal leading-[1.3]">
                       {listing.name}
                     </span>
@@ -153,7 +156,23 @@ export default async function SolutionsPage({
                   </div>
                 </div>
 
-                {listing.status === "live" ? (
+                {listing.hidden_at ? (
+                  <div className="flex flex-col gap-[6px] rounded-control border border-red-200 bg-red-50 px-4 py-[14px]">
+                    <span className="text-[15px] font-bold text-red-700">
+                      Taken down while something is sorted
+                    </span>
+                    <span className="text-[15px] leading-[1.6] text-red-700">
+                      {listing.hidden_reason ??
+                        "No reason was recorded. Reply to any email from us and we will explain."}
+                    </span>
+                    <span className="text-[14px] leading-[1.6] text-red-700">
+                      Nothing is lost. Edit it and reply to us, and it goes back
+                      in front of women.
+                    </span>
+                  </div>
+                ) : null}
+
+                {listing.status === "live" && !listing.hidden_at ? (
                   <div className="flex flex-wrap gap-8 border-t border-hairline-soft pt-[14px]">
                     {(() => {
                       const s = statsByListing[listing.id] ?? NO_STATS;

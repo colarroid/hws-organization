@@ -11,13 +11,25 @@ const STYLES: Record<ListingStatus, { className: string; label: string }> = {
   closed: { className: "bg-closed text-ink-65", label: "Closed" },
 };
 
+const HIDDEN = { className: "bg-red-50 text-red-700", label: "Hidden" };
+
 /**
  * The status pill sits above the listing name rather than beside it. That is
  * the hierarchy point on both the dashboard and the woman-facing saved list:
  * status is read before the name.
+ *
+ * Hidden overrides the status rather than sitting beside it. A hidden listing
+ * is still `live` in the database, and a row reading "Live" for something no
+ * woman can reach would be the most misleading thing on the page.
  */
-export function StatusPill({ status }: { status: ListingStatus }) {
-  const { className, label } = STYLES[status];
+export function StatusPill({
+  status,
+  hidden = false,
+}: {
+  status: ListingStatus;
+  hidden?: boolean;
+}) {
+  const { className, label } = hidden ? HIDDEN : STYLES[status];
   return (
     <span
       className={`self-start rounded-pill-sm px-[11px] py-[7px] text-[13px] font-bold ${className}`}
