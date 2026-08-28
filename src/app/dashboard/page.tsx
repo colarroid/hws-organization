@@ -64,15 +64,10 @@ export default async function OverviewPage() {
               ? "We could not verify you yet"
               : "We need one more thing to verify you"
           }
-          // Shown here rather than only emailed and only linked to. The email
-          // can fail, and a link to go and read the ask is one step more than
-          // it needs to be when the ask is two sentences long.
+          // Shown here rather than only emailed. The email can fail, and this
+          // is also why there is no link out to the organisation page: that
+          // link existed to go and read the ask, and the ask is right here.
           note={organisation.review_note}
-          action={
-            <ButtonLink href="/organisation" variant="secondary" size="inline">
-              Your organisation
-            </ButtonLink>
-          }
         >
           Nothing you have written is lost. Reply to the email we sent with
           what we have asked for, and we will pick it up from there.
