@@ -84,12 +84,15 @@ export default async function SolutionsPage({
       </div>
 
       {!verified ? (
-        <Banner tone="info" icon={<Clock size={20} strokeWidth={2} />}>
-          <strong>
-            {blocked === "verification"
-              ? "You cannot post a solution yet."
-              : "Verification in progress."}
-          </strong>{" "}
+        <Banner
+          tone="info"
+          icon={<Clock size={20} strokeWidth={2} />}
+          title={
+            blocked === "verification"
+              ? "You cannot post a solution yet"
+              : "Verification in progress"
+          }
+        >
           We check every organisation before its listings can reach women.
           Posting opens as soon as that is done, and nothing is asked of you in
           the meantime.

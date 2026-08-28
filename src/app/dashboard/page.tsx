@@ -56,23 +56,35 @@ export default async function OverviewPage() {
   return (
     <Page width={900} top={56} gap={28}>
       {organisation.status === "more_evidence" || organisation.status === "rejected" ? (
-        <Banner tone="warning" icon={<TriangleAlert size={20} strokeWidth={2} />}>
-          <strong>
-            {organisation.status === "rejected"
-              ? "We could not verify you yet."
-              : "We need one more thing to verify you."}
-          </strong>{" "}
-          Nothing you have written is lost. See{" "}
-          <Link href="/organisation" className="font-bold underline">
-            your organisation page
-          </Link>{" "}
-          for what we asked for.
+        <Banner
+          tone="warning"
+          icon={<TriangleAlert size={20} strokeWidth={2} />}
+          title={
+            organisation.status === "rejected"
+              ? "We could not verify you yet"
+              : "We need one more thing to verify you"
+          }
+          // Shown here rather than only emailed and only linked to. The email
+          // can fail, and a link to go and read the ask is one step more than
+          // it needs to be when the ask is two sentences long.
+          note={organisation.review_note}
+          action={
+            <ButtonLink href="/organisation" variant="secondary" size="inline">
+              Your organisation
+            </ButtonLink>
+          }
+        >
+          Nothing you have written is lost. Reply to the email we sent with
+          what we have asked for, and we will pick it up from there.
         </Banner>
       ) : organisation.status !== "verified" ? (
-        <Banner tone="info" icon={<Clock size={20} strokeWidth={2} />}>
-          <strong>Verification in progress.</strong> We check every organisation
-          before its listings can reach women. Posting and inviting colleagues
-          open as soon as that is done.
+        <Banner
+          tone="info"
+          icon={<Clock size={20} strokeWidth={2} />}
+          title="Verification in progress"
+        >
+          We check every organisation before its listings can reach women.
+          Posting and inviting colleagues open as soon as that is done.
         </Banner>
       ) : null}
 
@@ -107,13 +119,13 @@ export default async function OverviewPage() {
             <Banner
               tone="warning"
               icon={<TriangleAlert size={20} strokeWidth={2} />}
+              title={
+                stale.length === 1
+                  ? "One listing needs checking"
+                  : `${stale.length} listings need checking`
+              }
               action={<ConfirmFreshnessButton listingId={stale[0].id} />}
             >
-              <strong>
-                {stale.length === 1
-                  ? "One listing needs checking."
-                  : `${stale.length} listings need checking.`}
-              </strong>{" "}
               We last confirmed {stale[0].name} on{" "}
               {stale[0].last_confirmed_at
                 ? shortDate(stale[0].last_confirmed_at)
