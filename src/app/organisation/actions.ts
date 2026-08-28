@@ -26,7 +26,7 @@ function inviteSendError(raw: string | undefined): string {
   const detail = raw ?? "";
 
   if (detail.includes("RESEND_API_KEY") || detail.includes("EMAIL_FROM")) {
-    return "Email is not configured on this deployment yet, so the invitation could not be sent. Nobody has been invited.";
+    return "This deployment has no RESEND_API_KEY or EMAIL_FROM set, so it cannot send email at all. Nobody has been invited.";
   }
 
   if (detail.includes("reserved address")) {
