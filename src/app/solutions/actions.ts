@@ -171,12 +171,36 @@ export async function submitForReview(listingId: string) {
     throw new Error(`Could not record the submission: ${auditError.message}`);
   }
 
+  // Straight to live. Trust is established when HWS verifies the
+  // organisation, not listing by listing: an unverified organisation cannot
+  // create a listing at all, and a verified one does not queue behind a
+  // reviewer to publish. Admins moderate afterwards by hiding.
+  //
+  // published_at is only stamped the first time, so a listing that was live,
+  // closed and reopened keeps the date women were first shown it.
   const { error } = await supabase
     .from("listings")
-    .update({ status: "in_review" })
-    .eq("id", listingId);
+    .update({
+      status: "live",
+      published_at: new Date().toISOString(),
+      last_confirmed_at: new Date().toISOString(),
+    })
+    .eq("id", listingId)
+    .is("published_at", null);
 
-  if (error) throw new Error(`Could not submit the listing: ${error.message}`);
+  if (error) throw new Error(`Could not publish the listing: ${error.message}`);
+
+  // Anything already published keeps its original date and simply goes live
+  // again, which is the reopen case.
+  const { error: republishError } = await supabase
+    .from("listings")
+    .update({ status: "live", last_confirmed_at: new Date().toISOString() })
+    .eq("id", listingId)
+    .not("published_at", "is", null);
+
+  if (republishError) {
+    throw new Error(`Could not publish the listing: ${republishError.message}`);
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/solutions");

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FilePlus2 } from "lucide-react";
+import { Clock, FilePlus2 } from "lucide-react";
+import { Banner } from "@/components/organisations/Banner";
 import { Page } from "@/components/ui/Page";
 import { ButtonLink } from "@/components/ui/Button";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
-import { onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, onboardingNextStep } from "@/lib/onboarding";
 import {
   getListings,
   getStatsByListing,
@@ -42,7 +43,7 @@ export const metadata: Metadata = { title: "My solutions" };
 export default async function SolutionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; blocked?: string }>;
 }) {
   const supabase = await createClient();
   const {
@@ -60,7 +61,8 @@ export default async function SolutionsPage({
   const listings = await getListings(organisation.id);
   const statsByListing = await getStatsByListing(listings.map((l) => l.id));
 
-  const { tab: rawTab } = await searchParams;
+  const { tab: rawTab, blocked } = await searchParams;
+  const verified = isVerified(organisation);
   const tab: Tab = TABS.includes(rawTab as Tab) ? (rawTab as Tab) : "All";
   const visible = listings.filter(TAB_MATCHES[tab]);
   const hasAny = listings.length > 0;
@@ -74,12 +76,25 @@ export default async function SolutionsPage({
           </h1>
           <span className="text-[16px] text-ink-70">{countLine(listings)}</span>
         </div>
-        {hasAny ? (
+        {hasAny && verified ? (
           <ButtonLink href="/solutions/new" size="inline" className="px-6 py-[14px] text-[16px]">
             Post a solution
           </ButtonLink>
         ) : null}
       </div>
+
+      {!verified ? (
+        <Banner tone="info" icon={<Clock size={20} strokeWidth={2} />}>
+          <strong>
+            {blocked === "verification"
+              ? "You cannot post a solution yet."
+              : "Verification in progress."}
+          </strong>{" "}
+          We check every organisation before its listings can reach women.
+          Posting opens as soon as that is done, and nothing is asked of you in
+          the meantime.
+        </Banner>
+      ) : null}
 
       {hasAny ? (
         <>
@@ -172,9 +187,11 @@ export default async function SolutionsPage({
             drop-in, a mentoring place. Post them separately rather than
             bundling them, so each can be matched to the women it suits.
           </p>
-          <ButtonLink href="/solutions/new" size="inline" className="px-7 py-4 text-[17px]">
-            Post your first solution
-          </ButtonLink>
+          {verified ? (
+            <ButtonLink href="/solutions/new" size="inline" className="px-7 py-4 text-[17px]">
+              Post your first solution
+            </ButtonLink>
+          ) : null}
         </div>
       )}
     </Page>

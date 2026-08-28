@@ -8,7 +8,7 @@ import { Banner } from "@/components/organisations/Banner";
 import { ConfirmFreshnessButton } from "@/components/organisations/ConfirmFreshnessButton";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
-import { onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, onboardingNextStep } from "@/lib/onboarding";
 import {
   getListings,
   getStatsByListing,
@@ -70,8 +70,9 @@ export default async function OverviewPage() {
         </Banner>
       ) : organisation.status !== "verified" ? (
         <Banner tone="info" icon={<Clock size={20} strokeWidth={2} />}>
-          <strong>Verification in progress.</strong> You can draft and submit
-          solutions now. They publish as soon as we confirm your details.
+          <strong>Verification in progress.</strong> We check every organisation
+          before its listings can reach women. Posting and inviting colleagues
+          open as soon as that is done.
         </Banner>
       ) : null}
 
@@ -139,9 +140,11 @@ export default async function OverviewPage() {
             course, a grant, a drop-in, a mentoring place. Your figures start
             here once the first one is live.
           </p>
-          <ButtonLink href="/solutions/new" size="inline" className="px-7 py-4 text-[17px]">
-            Post your first solution
-          </ButtonLink>
+          {isVerified(organisation) ? (
+            <ButtonLink href="/solutions/new" size="inline" className="px-7 py-4 text-[17px]">
+              Post your first solution
+            </ButtonLink>
+          ) : null}
         </div>
       )}
     </Page>

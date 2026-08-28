@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Page } from "@/components/ui/Page";
 import { SolutionForm } from "@/components/organisations/SolutionForm";
 import { getMyOrganisation, getSituations } from "@/lib/data/organisations";
-import { onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, onboardingNextStep } from "@/lib/onboarding";
 
 export const metadata: Metadata = { title: "Post a solution" };
 
@@ -15,6 +15,10 @@ export default async function NewSolutionPage() {
   // organisation. Finish it before anything that assumes it is done.
   const nextStep = onboardingNextStep(organisation);
   if (nextStep) redirect(nextStep);
+
+  // Verification is the gate on posting at all, not just on publishing, so
+  // there is nothing to fill in here yet.
+  if (!isVerified(organisation)) redirect("/solutions?blocked=verification");
 
   const situations = await getSituations();
 

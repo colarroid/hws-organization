@@ -14,6 +14,45 @@ const inviteSchema = z.object({
   email: z.string().trim().toLowerCase().min(1, "Add their email address.").email(),
 });
 
+/**
+ * Say what actually went wrong.
+ *
+ * The first version of this returned one sentence for every failure, which
+ * told the person nothing they could act on and hid the cause from us too.
+ * This portal is used by staff at an organisation, not by a woman mid-search,
+ * so a real reason is worth more here than a soothing one.
+ */
+function inviteSendError(raw: string | undefined): string {
+  const detail = raw ?? "";
+
+  if (detail.includes("RESEND_API_KEY") || detail.includes("EMAIL_FROM")) {
+    return "Email is not configured on this deployment yet, so the invitation could not be sent. Nobody has been invited.";
+  }
+
+  if (detail.includes("reserved address")) {
+    return "That address is a reserved testing domain and cannot receive email. Use a real work address.";
+  }
+
+  // 403 from Resend is nearly always an unverified sending domain, and while
+  // it is unverified the only address it will deliver to is the account
+  // owner's own. That is worth naming, because it looks like a bad recipient.
+  if (detail.includes("403")) {
+    return "Our email provider refused the send, which usually means the sending domain is not verified yet. The address you entered is probably fine. Nobody has been invited.";
+  }
+
+  if (detail.includes("422") || detail.toLowerCase().includes("invalid")) {
+    return "Our email provider would not accept that address. Check it for a typo.";
+  }
+
+  if (detail.includes("429")) {
+    return "We have sent a lot of email in a short time. Wait a minute and try again.";
+  }
+
+  return detail
+    ? `The invitation could not be sent: ${detail}`
+    : "The invitation could not be sent, and no reason came back. Nobody has been invited.";
+}
+
 /** Absolute origin for the emailed link, taken from the request host. */
 async function origin() {
   const host = (await headers()).get("host") ?? "localhost:3000";
@@ -92,7 +131,7 @@ export async function inviteColleague(
       .is("accepted_at", null);
 
     console.error("colleague invite failed to send", sent.error);
-    return { error: "We could not send that invitation. Check the address and try again." };
+    return { error: inviteSendError(sent.error) };
   }
 
   revalidatePath("/organisation");

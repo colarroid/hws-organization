@@ -5,7 +5,7 @@ import { UserPlus } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
-import { onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, onboardingNextStep } from "@/lib/onboarding";
 import { VerificationStatus } from "@/components/organisations/VerificationStatus";
 import { InviteColleagueForm } from "@/components/organisations/InviteForms";
 import { revokeInvitation } from "@/app/organisation/actions";
@@ -138,7 +138,15 @@ export default async function OrganisationPage() {
             stays with the organisation, not the person, so there is nothing
             for them to prove again.
           </span>
-          <InviteColleagueForm />
+          {isVerified(organisation) ? (
+            <InviteColleagueForm />
+          ) : (
+            <span className="text-[15px] leading-[1.6] text-gold-700">
+              You can invite colleagues once HWS has verified this
+              organisation. Verification covers everyone here, so there is
+              nothing for them to prove separately.
+            </span>
+          )}
         </div>
       </section>
     </Page>
