@@ -171,45 +171,41 @@ export default async function OverviewPage({
           <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-3">
             <Link
               href="/solutions"
-              className="group flex flex-col gap-1 rounded-card bg-surface p-5 no-underline shadow-hairline transition-[box-shadow,transform] duration-150 ease-out hover:-translate-y-[2px] hover:shadow-panel"
+              className="group flex min-h-[150px] flex-col justify-between rounded-card bg-surface p-6 no-underline shadow-hairline transition-[box-shadow,transform] duration-150 ease-out hover:-translate-y-[2px] hover:shadow-panel"
             >
-              <span className="font-display text-[34px] font-normal leading-none tabular-nums text-ink">
+              <span className="font-display text-[52px] font-normal leading-[0.95] tracking-[-0.02em] tabular-nums text-ink">
                 {listings.length}
               </span>
-              <span className="flex items-center gap-[6px] text-[14px] text-ink-65">
+              <span className="flex items-center gap-[6px] text-[15px] leading-[1.35] text-ink-65">
                 {listings.length === 1
                   ? t("stats.posted.one")
                   : t("stats.posted.many")}
                 <ArrowRight
                   size={15}
                   strokeWidth={2}
-                  className="text-gold-700 transition-transform duration-150 ease-out group-hover:translate-x-1"
+                  className="shrink-0 text-gold-700 transition-transform duration-150 ease-out group-hover:translate-x-1"
                   aria-hidden="true"
                 />
               </span>
             </Link>
 
+            {/* The figure carries the card and the label sits under it at the
+                foot, so a row of these reads as three numbers rather than
+                three sentences with numbers in them. */}
             {[
-              {
-                value: reach.reached,
-                label: t("stats.reached"),
-                note: t("stats.reachedNote"),
-              },
-              {
-                value: reach.profileViews,
-                label: t("stats.profileViews"),
-                note: t("stats.profileViewsNote"),
-              },
+              { value: reach.reached, label: t("stats.reached") },
+              { value: reach.profileViews, label: t("stats.profileViews") },
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col gap-1 rounded-card shadow-hairline bg-surface p-5"
+                className="flex min-h-[150px] flex-col justify-between rounded-card bg-surface p-6 shadow-hairline"
               >
-                <span className="font-display text-[34px] font-normal leading-none tabular-nums">
+                <span className="font-display text-[52px] font-normal leading-[0.95] tracking-[-0.02em] tabular-nums text-ink">
                   {stat.value}
                 </span>
-                <span className="text-[14px] text-ink-65">{stat.label}</span>
-                <span className="text-[13px] text-ink-60">{stat.note}</span>
+                <span className="text-[15px] leading-[1.35] text-ink-65">
+                  {stat.label}
+                </span>
               </div>
             ))}
           </div>

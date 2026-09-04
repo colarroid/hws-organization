@@ -43,6 +43,10 @@ export default async function PreviewPage({
 
   if (!listing || listing.organisation_id !== organisation.id) notFound();
 
+  // Live and closed are both published: she can reach a closed one from a
+  // saved list or a link, so neither is waiting on anybody here.
+  const published = listing.status === "live" || listing.status === "closed";
+
   const tags = [
     labelFor(SOLUTION_KINDS, listing.kind),
     labelFor(COSTS, listing.cost),
@@ -60,7 +64,14 @@ export default async function PreviewPage({
     whoFor: listing.who_for ?? "",
     whatToExpect: listing.what_to_expect ?? "",
     why: "written by us from her answers, so she knows why she is seeing this.",
-    verified: "Verified once we check this listing",
+    // Once it is live this stops being a preview of a promise and becomes the
+    // line she actually reads. "Verified once we check this listing" under
+    // something already published is the page contradicting itself.
+    verified: published
+      ? listing.last_confirmed_at
+        ? `Verified · last checked ${DATE.format(new Date(listing.last_confirmed_at))}`
+        : "Verified"
+      : "Verified once we check this listing",
   };
 
   // Each gap names its consequence for a woman rather than the rule it broke.
@@ -75,12 +86,15 @@ export default async function PreviewPage({
 
   return (
     <Page width={820} top={56} gap={24}>
+      {/* Back to the list, which is where this was opened from. It used to
+          point at the edit form, so the one control that looks like "undo
+          this detour" was the one that took you further into it. */}
       <Link
-        href={`/solutions/${listing.id}/edit`}
+        href="/solutions"
         className="inline-flex min-h-[44px] items-center gap-[6px] self-start text-[14px] font-bold text-ink no-underline"
       >
         <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
-        Keep editing
+        My solutions
       </Link>
 
       <div className="flex flex-col gap-[10px]">
@@ -113,7 +127,7 @@ export default async function PreviewPage({
       {gaps.length > 0 ? (
         <div className="flex flex-col gap-[10px] rounded-card border border-red-200 bg-red-50 px-[22px] py-5">
           <span className="text-[16px] font-bold text-red-700">
-            Worth filling in before you submit
+            {published ? "Worth filling in" : "Worth filling in before you submit"}
           </span>
           {gaps.map((gap) => (
             <span key={gap} className="text-[15px] leading-[1.5] text-red-700">
@@ -123,15 +137,18 @@ export default async function PreviewPage({
         </div>
       ) : null}
 
+      {/* Nothing to submit once it is published. Offering it anyway invites
+          somebody to press it and then wonder what they have just done to a
+          listing women are already reading. */}
       <div className="flex flex-wrap items-center gap-3 border-t border-hairline pt-6">
-        <SubmitForReviewButton listingId={listing.id} />
+        {published ? null : <SubmitForReviewButton listingId={listing.id} />}
         <ButtonLink
           href={`/solutions/${listing.id}/edit`}
-          variant="secondary"
+          variant={published ? "primary" : "secondary"}
           size="inline"
           className="px-[22px] py-[15px] text-[16px]"
         >
-          Keep editing
+          {published ? "Edit this listing" : "Keep editing"}
         </ButtonLink>
       </div>
     </Page>
