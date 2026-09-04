@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Field, TextAreaField } from "@/components/ui/Field";
+import { PlaceField } from "@/components/ui/PlaceField";
 import { Chip, ChipGroup } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
 import { FormError } from "@/components/ui/Form";
@@ -154,11 +155,13 @@ export function SolutionForm({
 
         <div className="flex flex-wrap gap-[14px]">
           <div className="min-w-[200px] flex-1">
-            <Field
+            <PlaceField
               label="Where"
               name="place"
               defaultValue={listing?.place ?? ""}
               placeholder="e.g. Bathgate, or Scotland-wide"
+              extras={["Scotland-wide", "Online"]}
+              hint="Her answer is matched against this. A typo here does not look like a typo — it quietly hides you from the women closest to you."
             />
           </div>
           <div className="min-w-[200px] flex-1">

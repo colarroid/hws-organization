@@ -5,6 +5,7 @@ import { TextAreaField, Field } from "@/components/ui/Field";
 import { CheckboxGroup, RadioGroup } from "@/components/ui/Choice";
 import { FormError, SubmitButton } from "@/components/ui/Form";
 import { LogoField } from "@/components/organisations/LogoField";
+import { PlaceField } from "@/components/ui/PlaceField";
 import {
   AUDIENCES,
   AVAILABILITY,
@@ -188,11 +189,13 @@ export function ProfileForm({ organisation }: { organisation: MyOrganisation }) 
         />
 
         {wantsCoverageDetail ? (
-          <Field
+          <PlaceField
             label="Which areas, exactly?"
             name="coverageNote"
             defaultValue={organisation.coverage_note ?? ""}
-            placeholder="e.g. West Lothian and the western edge of Edinburgh"
+            placeholder="Start typing a town or council area"
+            multiple
+            hint="Add as many as you cover. Pick from the list where you can, so they match what women type."
           />
         ) : null}
 
