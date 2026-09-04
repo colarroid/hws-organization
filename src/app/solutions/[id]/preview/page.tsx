@@ -68,7 +68,7 @@ export default async function PreviewPage({
     !listing.who_for?.trim() &&
       "Who it is for is empty. Without it she cannot tell whether she qualifies, and this is the field women read first.",
     !listing.what_to_expect?.trim() &&
-      "What to expect is empty. Not knowing what happens next is the most common reason a woman does not apply.",
+      "What happens next is empty. Not knowing is the most common reason a woman does not act on a listing.",
     listing.situationIds.length === 0 &&
       "No situations picked, so we can only match this on your words and location.",
   ].filter((g): g is string => Boolean(g));

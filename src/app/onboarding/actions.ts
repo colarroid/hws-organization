@@ -4,15 +4,17 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { ORGANISATION_TYPES } from "@/lib/design/taxonomy";
+import { normaliseWebsite } from "@/lib/website";
 import type { FormState } from "../actions";
 
 const TYPE_SLUGS = ORGANISATION_TYPES.map((t) => t.slug) as [string, ...string[]];
 
 const aboutSchema = z.object({
   name: z.string().trim().min(1, "Add your organisation's name."),
-  type: z.enum(TYPE_SLUGS, {
-    message: "Pick the kind of organisation you are.",
-  }),
+  types: z
+    .array(z.enum(TYPE_SLUGS))
+    .min(1, "Pick at least one kind of organisation.")
+    .max(TYPE_SLUGS.length),
   website: z.string().trim().optional(),
   place: z.string().trim().optional(),
   blurb: z.string().trim().optional(),
@@ -31,13 +33,16 @@ export async function saveAbout(
 ): Promise<FormState> {
   const parsed = aboutSchema.safeParse({
     name: formData.get("name"),
-    type: formData.get("type"),
+    types: formData.getAll("types").map(String),
     website: formData.get("website"),
     place: formData.get("place"),
     blurb: formData.get("blurb"),
   });
 
   if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  const website = normaliseWebsite(parsed.data.website);
+  if (!website.ok) return { error: website.error };
 
   const supabase = await createClient();
   const {
@@ -49,8 +54,8 @@ export async function saveAbout(
   const existingId = formData.get("organisationId");
   const fields = {
     name: parsed.data.name,
-    type: parsed.data.type,
-    website: parsed.data.website || null,
+    types: parsed.data.types,
+    website: website.value,
     place: parsed.data.place || null,
     blurb: parsed.data.blurb || null,
   };
@@ -67,7 +72,7 @@ export async function saveAbout(
     // succeed. See migration 0012.
     const { error } = await supabase.rpc("create_organisation", {
       p_name: fields.name,
-      p_type: fields.type,
+      p_types: fields.types,
       p_website: fields.website,
       p_place: fields.place,
       p_blurb: fields.blurb,

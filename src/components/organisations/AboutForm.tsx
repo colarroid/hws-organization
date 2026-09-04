@@ -22,7 +22,7 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
     saveAbout,
     null,
   );
-  const [type, setType] = useState(organisation?.type ?? "");
+  const [types, setTypes] = useState<string[]>(organisation?.types ?? []);
 
   return (
     <form action={formAction} className="flex flex-col gap-[26px]">
@@ -46,18 +46,31 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
               is written out here to match the labelled inputs. */}
           <span aria-hidden="true" className="text-gold-700"> *</span>
         </span>
-        <ChipGroup label="What kind of organisation are you?" multi={false}>
+        <span className="text-[14px] leading-[1.5] text-ink-60">
+          Pick every one that applies. Plenty of organisations are more than
+          one thing.
+        </span>
+        <ChipGroup label="What kind of organisation are you?" multi>
           {ORGANISATION_TYPES.map((option) => (
             <Chip
               key={option.slug}
               label={option.label}
-              selected={type === option.slug}
-              multi={false}
-              onToggle={() => setType(option.slug)}
+              selected={types.includes(option.slug)}
+              multi
+              onToggle={() =>
+                setTypes((current) =>
+                  current.includes(option.slug)
+                    ? current.filter((slug) => slug !== option.slug)
+                    : [...current, option.slug],
+                )
+              }
             />
           ))}
         </ChipGroup>
-        <input type="hidden" name="type" value={type} />
+        {/* One input per choice, so the action reads them with getAll. */}
+        {types.map((slug) => (
+          <input key={slug} type="hidden" name="types" value={slug} />
+        ))}
       </div>
 
       <div className="flex flex-col gap-[14px] sm:flex-row">
@@ -65,9 +78,13 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
           <Field
             label="Website"
             name="website"
-            type="url"
+            /* Not type="url": the browser would reject anything without a
+               scheme, and people do not type schemes. The action adds it. */
+            inputMode="url"
+            autoComplete="url"
             defaultValue={organisation?.website ?? ""}
-            placeholder="www.example.org"
+            placeholder="example.org"
+            hint="No need for https:// — we will add it."
           />
         </div>
         <div className="flex-1">

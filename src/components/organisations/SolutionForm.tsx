@@ -113,12 +113,12 @@ export function SolutionForm({
         />
 
         <TextAreaField
-          label="What should she expect after she applies?"
+          label="What happens next for her?"
           name="whatToExpect"
           rows={2}
           defaultValue={listing?.what_to_expect ?? ""}
-          placeholder="e.g. A short form, then someone phones you within a week for an informal chat."
-          hint="Not knowing what happens next is the most common reason women do not apply."
+          placeholder="e.g. A short form, then someone phones within a week. Or: drop in any Tuesday, no need to book."
+          hint="Applying, turning up, or just reading it — say what actually happens. Not knowing is the most common reason women do not act on a listing."
         />
 
         <div className="flex flex-col gap-[10px]">
