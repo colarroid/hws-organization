@@ -18,9 +18,12 @@ import { getMyOrganisation } from "@/lib/data/organisations";
 import { isVerified, nextRequiredStep } from "@/lib/onboarding";
 import { profileGaps, andList } from "@/lib/profile";
 import {
+  PERIODS,
+  getOrganisationStats,
+  periodFrom,
+} from "@/lib/data/stats";
+import {
   getListings,
-  getStatsByListing,
-  sumStats,
   staleListings,
 } from "@/lib/data/listings";
 import { countLine, shortDate } from "@/lib/design/listing-copy";
@@ -40,9 +43,10 @@ export const metadata: Metadata = { title: "Overview" };
 export default async function OverviewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ profile?: string }>;
+  searchParams: Promise<{ profile?: string; period?: string }>;
 }) {
-  const { profile } = await searchParams;
+  const { profile, period: rawPeriod } = await searchParams;
+  const period = periodFrom(rawPeriod);
   const supabase = await createClient();
   const {
     data: { user },
@@ -61,11 +65,10 @@ export default async function OverviewPage({
   if (nextStep) redirect(nextStep);
 
   const listings = await getListings(organisation.id);
-  const statsByListing = await getStatsByListing(listings.map((l) => l.id));
-  const stats = sumStats(statsByListing);
   const stale = staleListings(listings);
   // Reaches nobody until it is sorted, so it outranks a freshness nudge.
   const takenDown = listings.filter((l) => l.hidden_at);
+  const reach = await getOrganisationStats(organisation.id, period);
   const profileMissing = profileGaps(organisation);
   const hasAny = listings.length > 0;
 
@@ -136,11 +139,60 @@ export default async function OverviewPage({
 
       {hasAny ? (
         <>
+          {/* The period applies to the two figures that move. The count of
+              what has been posted is not a rate, so it sits outside and
+              stays whole however the rest is sliced. */}
+          <nav aria-label="Period" className="flex flex-wrap gap-[10px]">
+            {PERIODS.map((option) => {
+              const active = option.slug === period;
+              return (
+                <Link
+                  key={option.slug}
+                  href={option.slug === "month" ? "/dashboard" : "/dashboard?period=" + option.slug}
+                  aria-current={active ? "true" : undefined}
+                  className={[
+                    "inline-flex min-h-[44px] items-center rounded-full px-[18px] py-[10px] text-[15px] font-semibold no-underline",
+                    active
+                      ? "bg-ink text-white"
+                      : "bg-surface text-ink shadow-hairline transition-[box-shadow] duration-150 ease-out hover:shadow-hairline-gold",
+                  ].join(" ")}
+                >
+                  {option.label}
+                </Link>
+              );
+            })}
+          </nav>
+
           <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-3">
+            <Link
+              href="/solutions"
+              className="group flex flex-col gap-1 rounded-card bg-surface p-5 no-underline shadow-hairline transition-[box-shadow,transform] duration-150 ease-out hover:-translate-y-[2px] hover:shadow-panel"
+            >
+              <span className="font-display text-[34px] font-normal leading-none tabular-nums text-ink">
+                {listings.length}
+              </span>
+              <span className="flex items-center gap-[6px] text-[14px] text-ink-65">
+                {listings.length === 1 ? "solution posted" : "solutions posted"}
+                <ArrowRight
+                  size={15}
+                  strokeWidth={2}
+                  className="text-gold-700 transition-transform duration-150 ease-out group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </span>
+            </Link>
+
             {[
-              { value: stats.views, label: "women saw your listings this month" },
-              { value: stats.saves, label: "saved one to come back to" },
-              { value: stats.clickthroughs, label: "went through to your site" },
+              {
+                value: reach.reached,
+                label: "women reached",
+                note: "went through to you",
+              },
+              {
+                value: reach.profileViews,
+                label: "profile visits",
+                note: "read about you",
+              },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -150,6 +202,7 @@ export default async function OverviewPage({
                   {stat.value}
                 </span>
                 <span className="text-[14px] text-ink-65">{stat.label}</span>
+                <span className="text-[13px] text-ink-60">{stat.note}</span>
               </div>
             ))}
           </div>
@@ -160,8 +213,8 @@ export default async function OverviewPage({
               icon={<EyeOff size={20} strokeWidth={2} />}
               title={
                 takenDown.length === 1
-                  ? `name is not showing to women`
-                  : ` listings are not showing to women`
+                  ? takenDown[0].name + " is not showing to women"
+                  : takenDown.length + " listings are not showing to women"
               }
               note={takenDown.length === 1 ? takenDown[0].hidden_reason : null}
               action={
