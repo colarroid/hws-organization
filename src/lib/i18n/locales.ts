@@ -24,18 +24,32 @@ export type Locale = {
   /** In English, for the accessible name of the control. */
   english: string;
   dir: "ltr" | "rtl";
+  /** Two or three letters, shown beside the badge. */
+  short: string;
+  /**
+   * Which badge to draw. A flag where one is unambiguous; a letter from the
+   * language's own script where it is not.
+   *
+   * Arabic and Punjabi have no honest flag. Arabic is spoken across twenty-odd
+   * countries and picking one of them tells most Arabic speakers this was not
+   * built with them in mind; Punjab is split between India and Pakistan, so
+   * either flag misidentifies half the people who would reach for it. Those
+   * two get their own first letter instead, at the same size and in the same
+   * circle, so the row still reads as one set.
+   */
+  badge: "uk" | "scotland" | "poland" | "ukraine" | "pakistan" | "china" | string;
 };
 
 export const LOCALES: Locale[] = [
-  { code: "en", name: "English", english: "English", dir: "ltr" },
-  { code: "gd", name: "Gàidhlig", english: "Scottish Gaelic", dir: "ltr" },
-  { code: "sco", name: "Scots", english: "Scots", dir: "ltr" },
-  { code: "pl", name: "Polski", english: "Polish", dir: "ltr" },
-  { code: "uk", name: "Українська", english: "Ukrainian", dir: "ltr" },
-  { code: "ar", name: "العربية", english: "Arabic", dir: "rtl" },
-  { code: "ur", name: "اردو", english: "Urdu", dir: "rtl" },
-  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", dir: "ltr" },
-  { code: "zh", name: "简体中文", english: "Chinese, simplified", dir: "ltr" },
+  { code: "en", name: "English", english: "English", dir: "ltr", short: "EN", badge: "uk" },
+  { code: "gd", name: "Gàidhlig", english: "Scottish Gaelic", dir: "ltr", short: "GD", badge: "scotland" },
+  { code: "sco", name: "Scots", english: "Scots", dir: "ltr", short: "SCO", badge: "scotland" },
+  { code: "pl", name: "Polski", english: "Polish", dir: "ltr", short: "PL", badge: "poland" },
+  { code: "uk", name: "Українська", english: "Ukrainian", dir: "ltr", short: "UK", badge: "ukraine" },
+  { code: "ar", name: "العربية", english: "Arabic", dir: "rtl", short: "AR", badge: "ع" },
+  { code: "ur", name: "اردو", english: "Urdu", dir: "rtl", short: "UR", badge: "pakistan" },
+  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", dir: "ltr", short: "PA", badge: "ਪ" },
+  { code: "zh", name: "简体中文", english: "Chinese, simplified", dir: "ltr", short: "ZH", badge: "china" },
 ];
 
 export const DEFAULT_LOCALE = "en";

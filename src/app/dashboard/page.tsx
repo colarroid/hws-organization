@@ -27,7 +27,6 @@ import {
   staleListings,
 } from "@/lib/data/listings";
 import { countLine, shortDate } from "@/lib/design/listing-copy";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getTranslator } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -71,7 +70,7 @@ export default async function OverviewPage({
   // Reaches nobody until it is sorted, so it outranks a freshness nudge.
   const takenDown = listings.filter((l) => l.hidden_at);
   const reach = await getOrganisationStats(organisation.id, period);
-  const { t, locale } = await getTranslator();
+  const { t } = await getTranslator();
   const profileMissing = profileGaps(organisation);
   const hasAny = listings.length > 0;
 
@@ -135,12 +134,6 @@ export default async function OverviewPage({
           send you, and it is the first thing an admin reads when verifying.
         </Banner>
       ) : null}
-
-      {/* First, because somebody who cannot read the rest needs this before
-          anything else on the screen. */}
-      <div className="self-end">
-        <LanguageSwitcher label={t("language.label")} current={locale.code} />
-      </div>
 
       <div className="flex flex-col gap-2">
         <h1 className="m-0 font-display text-[44px] font-normal leading-[1.1] tracking-[-0.01em]">

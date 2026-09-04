@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { OrgHeader } from "@/components/organisations/OrgHeader";
 import { OrgSidebar } from "@/components/organisations/OrgSidebar";
+import { OrgTopBar } from "@/components/organisations/OrgTopBar";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { getListings } from "@/lib/data/listings";
 import { onboardingNextStep } from "@/lib/onboarding";
@@ -94,7 +95,12 @@ export default async function RootLayout({
               hasOrganisation={navigable}
               liveCount={liveCount}
               restricted={restricted}
+              locale={locale.code}
             />
+            {/* Only alongside the rail. Without an organisation the header
+                spans the full width and already carries the same control, so
+                rendering both would put two language menus on one screen. */}
+            {navigable ? <OrgTopBar locale={locale.code} /> : null}
             <main className="flex flex-1 flex-col">{children}</main>
           </div>
         </div>

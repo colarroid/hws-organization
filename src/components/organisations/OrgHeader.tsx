@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { MobileNav } from "@/components/ui/MobileNav";
 import { OrgNav } from "@/components/organisations/OrgNav";
+import { LanguageMenu } from "@/components/LanguageMenu";
 import { signOut } from "@/app/actions";
 
 type OrgHeaderProps = {
@@ -17,6 +18,8 @@ type OrgHeaderProps = {
   liveCount?: number;
   /** The profile is still owed, so the menu holds only that. */
   restricted?: boolean;
+  /** For the language control, which is in the header at this width. */
+  locale?: string;
 };
 
 /**
@@ -58,6 +61,7 @@ export function OrgHeader({
   hasOrganisation = false,
   liveCount = 0,
   restricted = false,
+  locale = "en",
 }: OrgHeaderProps) {
   return (
     <header
@@ -89,16 +93,23 @@ export function OrgHeader({
             />
           </Link>
 
-          {!signedIn ? null : hasOrganisation ? (
-            <MobileNav label="organisation menu">
-              <OrgNav variant="panel" liveCount={liveCount} restricted={restricted} />
-            </MobileNav>
-          ) : (
-            /* Part way through onboarding. One control, so it is shown
-               directly and in words at every width, rather than hidden
-               behind a menu button with a single item inside it. */
-            <SignOutControl />
-          )}
+          {/* The language control sits outside the menu, because somebody who
+              cannot read the interface should not have to open something
+              labelled in it to find the way out. */}
+          <div className="flex items-center gap-1">
+            <LanguageMenu current={locale} />
+
+            {!signedIn ? null : hasOrganisation ? (
+              <MobileNav label="organisation menu">
+                <OrgNav variant="panel" liveCount={liveCount} restricted={restricted} />
+              </MobileNav>
+            ) : (
+              /* Part way through onboarding. One control, so it is shown
+                 directly and in words at every width, rather than hidden
+                 behind a menu button with a single item inside it. */
+              <SignOutControl />
+            )}
+          </div>
         </div>
       </div>
     </header>
