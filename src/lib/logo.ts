@@ -1,6 +1,7 @@
 import "server-only";
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
+import { sniffImageType } from "@/lib/image";
 
 /**
  * Finding an organisation's icon on its own website.
@@ -27,14 +28,24 @@ const MAX_HTML_BYTES = 1024 * 1024;
 const TIMEOUT_MS = 6000;
 const MAX_REDIRECTS = 3;
 
-const ALLOWED_TYPES = new Set([
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "image/svg+xml",
-  "image/x-icon",
-  "image/vnd.microsoft.icon",
-]);
+/**
+ * Where an icon lives when the page does not say.
+ *
+ * `/favicon.ico` is the one everybody knows and the one that is least often
+ * an ICO file: browsers stopped caring about the extension years ago. The
+ * Apple icons come first because they are 180 pixels and the favicons are
+ * 32, and a logo beside a listing wants the bigger one.
+ */
+const FALLBACK_PATHS = [
+  "/apple-touch-icon.png",
+  "/apple-touch-icon-precomposed.png",
+  "/favicon-192x192.png",
+  "/favicon-96x96.png",
+  "/favicon-32x32.png",
+  "/favicon.png",
+  "/favicon.svg",
+  "/favicon.ico",
+];
 
 export type LogoCandidate = {
   /** Absolute, and already proven fetchable. */
@@ -229,10 +240,19 @@ export async function findLogoCandidates(website: string): Promise<LogoCandidate
     // try, since plenty of sites have one without ever declaring it.
   }
 
-  links.push({ href: new URL("/favicon.ico", base).toString(), size: null });
+  // Tried in order after anything the page declared, and de-duplicated below
+  // against it, so a site that names its own icon is not fetched twice.
+  for (const path of FALLBACK_PATHS) {
+    links.push({
+      href: new URL(path, base).toString(),
+      // Apple names its icon size by convention rather than declaring it.
+      size: path.includes("apple-touch-icon") ? 180 : null,
+    });
+  }
 
   // Biggest declared size first, so the good icon is fetched before the 16px
-  // one and the cap below rarely costs anything.
+  // one and the cap below rarely costs anything. Stable, so the fallback
+  // order survives among the ones that declare nothing.
   links.sort((a, b) => (b.size ?? 0) - (a.size ?? 0));
 
   const seen = new Set<string>();
@@ -245,15 +265,19 @@ export async function findLogoCandidates(website: string): Promise<LogoCandidate
 
     try {
       const icon = await safeFetch(new URL(link.href), MAX_BYTES);
-      if (!ALLOWED_TYPES.has(icon.contentType)) continue;
-      if (icon.buffer.byteLength === 0) continue;
+
+      // The bytes, not the header. A server that calls a PNG
+      // application/octet-stream is common; one that serves its HTML 404 page
+      // as image/png with a 200 beside it is not rare either.
+      const contentType = sniffImageType(icon.buffer);
+      if (!contentType) continue;
 
       candidates.push({
         url: icon.url.toString(),
         bytes: icon.buffer.byteLength,
-        contentType: icon.contentType,
+        contentType,
         size: link.size,
-        dataUrl: toDataUrl(icon.buffer, icon.contentType),
+        dataUrl: toDataUrl(icon.buffer, contentType),
       });
     } catch {
       // One icon 404ing says nothing about the next.

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { normaliseWebsite } from "@/lib/website";
+import { EXTENSION, sniffImageType } from "@/lib/image";
 import {
   AUDIENCES,
   AVAILABILITY,
@@ -45,15 +46,6 @@ function text(value: FormDataEntryValue | null, max = 2000) {
   const trimmed = String(value ?? "").trim();
   return trimmed ? trimmed.slice(0, max) : null;
 }
-
-const LOGO_TYPES: Record<string, string> = {
-  "image/png": "png",
-  "image/jpeg": "jpg",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-  "image/x-icon": "ico",
-  "image/vnd.microsoft.icon": "ico",
-};
 
 const MAX_LOGO_BYTES = 512 * 1024;
 
@@ -99,12 +91,6 @@ export async function saveProfile(
       return { error: "That logo could not be read. Try uploading it again." };
     }
 
-    const contentType = logoData.slice(5, logoData.indexOf(";")).toLowerCase();
-    const extension = LOGO_TYPES[contentType];
-    if (!extension) {
-      return { error: "Use a PNG, JPEG, WebP or SVG for your logo." };
-    }
-
     const bytes = Buffer.from(logoData.slice(logoData.indexOf(",") + 1), "base64");
     if (bytes.byteLength === 0) {
       return { error: "That logo file is empty." };
@@ -112,6 +98,15 @@ export async function saveProfile(
     if (bytes.byteLength > MAX_LOGO_BYTES) {
       return { error: "That logo is over 512 KB. A smaller file will look the same." };
     }
+
+    // The bytes decide, not the label on them. A file named logo.png is a PNG
+    // only if it starts like one, and half the icons on the web are served
+    // under a content type that has nothing to do with what they are.
+    const contentType = sniffImageType(bytes);
+    if (!contentType) {
+      return { error: "That file is not an image we can use. PNG, JPEG, WebP, SVG or ICO." };
+    }
+    const extension = EXTENSION[contentType];
 
     // Under the organisation's own id, which is what the bucket policy checks,
     // and named by time so a replacement is never served from a cache of the
