@@ -6,7 +6,7 @@ import { Page } from "@/components/ui/Page";
 import { ProfileForm } from "@/components/organisations/ProfileForm";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { onboardingNextStep } from "@/lib/onboarding";
-import { profileGaps, andList } from "@/lib/profile";
+import { profileGaps, andList, isProfileComplete } from "@/lib/profile";
 
 export const metadata: Metadata = { title: "About your organisation" };
 
@@ -26,16 +26,21 @@ export default async function ProfilePage() {
   if (nextStep) redirect(nextStep);
 
   const gaps = profileGaps(organisation);
+  // Before it is finished this is the only screen there is, so there is
+  // nowhere to go back to and no link pretending otherwise.
+  const required = !isProfileComplete(organisation);
 
   return (
     <Page width={820} top={56} gap={26}>
-      <Link
-        href="/organisation"
-        className="inline-flex min-h-[44px] items-center gap-[6px] self-start text-[14px] font-bold text-ink no-underline"
-      >
-        <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
-        Your organisation
-      </Link>
+      {required ? null : (
+        <Link
+          href="/organisation"
+          className="inline-flex min-h-[44px] items-center gap-[6px] self-start text-[14px] font-bold text-ink no-underline"
+        >
+          <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
+          Your organisation
+        </Link>
+      )}
 
       <div className="flex flex-col gap-[10px]">
         <h1 className="m-0 font-display text-[32px] font-normal leading-[1.1] tracking-[-0.01em] sm:text-[42px]">
@@ -46,9 +51,14 @@ export default async function ProfilePage() {
         </p>
       </div>
 
-      {gaps.length > 0 && organisation.profile_updated_at ? (
-        <p className="m-0 rounded-card border border-gold-300 bg-gold-200 px-[22px] py-4 text-[16px] leading-[1.5]">
-          Still to fill in: {andList(gaps)}.
+      {required ? (
+        <p className="m-0 rounded-card border border-gold-300 bg-gold-200 px-[22px] py-4 text-[16px] leading-[1.5] text-gold-700">
+          <strong>This is the last step.</strong> We are already checking you
+          over in the background. Save this and the rest of the portal opens
+          up.
+          {organisation.profile_updated_at
+            ? " Still to fill in: " + andList(gaps) + "."
+            : ""}
         </p>
       ) : null}
 

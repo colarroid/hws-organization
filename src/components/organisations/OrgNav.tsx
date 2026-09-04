@@ -27,6 +27,22 @@ const ITEMS = [
 ] as const;
 
 /**
+ * The one place there is until the profile is finished.
+ *
+ * Everything else redirects here anyway, and a rail of links that all land on
+ * the same screen is worse than a rail with one link on it: it reads as a
+ * portal that is broken rather than one that is waiting.
+ */
+const PROFILE_ONLY = [
+  {
+    href: "/organisation/profile",
+    label: "About your organisation",
+    icon: Building2,
+    counted: false,
+  },
+] as const;
+
+/**
  * Exact for Overview, prefix for the rest, so editing a listing still shows
  * as My solutions rather than as nowhere.
  */
@@ -39,12 +55,16 @@ function useIsActive() {
 export function OrgNav({
   variant,
   liveCount = 0,
+  restricted = false,
 }: {
   variant: "rail" | "panel";
   liveCount?: number;
+  /** The profile is still owed, so nothing else is reachable yet. */
+  restricted?: boolean;
 }) {
   const isActive = useIsActive();
   const panel = variant === "panel";
+  const items = restricted ? PROFILE_ONLY : ITEMS;
 
   // No rail on the active item. The fill carries it: gold 200 on the white
   // panel is a clear enough step, and it has the weight change and the gold
@@ -65,7 +85,7 @@ export function OrgNav({
         is the only navigation there is, so leaving it out would bury the one
         thing the portal is for behind two taps.
       */}
-      {panel ? (
+      {panel && !restricted ? (
         <Link
           href="/solutions/new"
           className="mb-2 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-ink px-[18px] py-[11px] text-[15px] font-bold text-white no-underline transition-opacity duration-150 ease-out hover:opacity-90"
@@ -76,7 +96,7 @@ export function OrgNav({
       ) : null}
 
       <nav aria-label="Organisation" className="flex flex-col gap-1">
-        {ITEMS.map(({ href, label, icon: Icon, counted }) => {
+        {items.map(({ href, label, icon: Icon, counted }) => {
           const active = isActive(href);
           return (
             <Link

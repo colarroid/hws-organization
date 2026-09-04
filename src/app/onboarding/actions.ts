@@ -133,10 +133,16 @@ const verifySchema = z.object({
 });
 
 /**
- * Step 3. Records the evidence and leaves the organisation pending.
+ * Step 3. Records the evidence and puts them in the queue.
  *
- * Verification gates publishing, not access, so this redirects straight to
- * the dashboard and drafting starts immediately.
+ * This is the moment they ask to be verified, so checking can start while
+ * they are still writing their profile. Holding the request back until the
+ * profile was finished would have left an organisation waiting on us and us
+ * waiting on them at the same time.
+ *
+ * The stamp is only ever set once. Coming back to correct a phone number is
+ * not a second request, and moving the date would send them to the back of a
+ * queue they were already in.
  */
 export async function saveVerification(
   _prev: FormState,
@@ -170,5 +176,16 @@ export async function saveVerification(
 
   if (error) return { error: error.message };
 
-  redirect("/dashboard");
+  // Separate, and guarded on being unset, so coming back to correct a phone
+  // number still saves the correction without moving their place in the
+  // queue. Rolled into the update above it would have had to match on null
+  // and would then have saved nothing at all on a second visit.
+  await supabase
+    .from("organisations")
+    .update({ verification_requested_at: new Date().toISOString() })
+    .eq("id", organisationId)
+    .is("verification_requested_at", null);
+
+  // Straight to the profile, which is the only thing there is to do next.
+  redirect("/organisation/profile");
 }

@@ -15,6 +15,8 @@ type OrgHeaderProps = {
   hasOrganisation?: boolean;
   /** Live listing count, shown as a pill beside "My solutions". */
   liveCount?: number;
+  /** The profile is still owed, so the menu holds only that. */
+  restricted?: boolean;
 };
 
 /**
@@ -55,6 +57,7 @@ export function OrgHeader({
   signedIn = false,
   hasOrganisation = false,
   liveCount = 0,
+  restricted = false,
 }: OrgHeaderProps) {
   return (
     <header
@@ -88,7 +91,7 @@ export function OrgHeader({
 
           {!signedIn ? null : hasOrganisation ? (
             <MobileNav label="organisation menu">
-              <OrgNav variant="panel" liveCount={liveCount} />
+              <OrgNav variant="panel" liveCount={liveCount} restricted={restricted} />
             </MobileNav>
           ) : (
             /* Part way through onboarding. One control, so it is shown

@@ -5,7 +5,7 @@ import { UserPlus } from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
-import { isVerified, onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, nextRequiredStep } from "@/lib/onboarding";
 import { profileGaps, andList } from "@/lib/profile";
 import { VerificationStatus } from "@/components/organisations/VerificationStatus";
 import { InviteColleagueForm } from "@/components/organisations/InviteForms";
@@ -39,7 +39,7 @@ export default async function OrganisationPage({
 
   // Onboarding can be broken off after step 1, which is what creates the
   // organisation. Finish it before anything that assumes it is done.
-  const nextStep = onboardingNextStep(organisation);
+  const nextStep = nextRequiredStep(organisation);
   if (nextStep) redirect(nextStep);
 
   // Invitations that have not been taken up. Shown so nobody wonders whether

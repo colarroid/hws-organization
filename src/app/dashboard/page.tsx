@@ -15,7 +15,7 @@ import { Banner } from "@/components/organisations/Banner";
 import { ConfirmFreshnessButton } from "@/components/organisations/ConfirmFreshnessButton";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
-import { isVerified, onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, nextRequiredStep } from "@/lib/onboarding";
 import { profileGaps, andList } from "@/lib/profile";
 import {
   getListings,
@@ -37,7 +37,12 @@ export const metadata: Metadata = { title: "Overview" };
  *
  * Order is still the handoff's: verification, then figures, then freshness.
  */
-export default async function OverviewPage() {
+export default async function OverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ profile?: string }>;
+}) {
+  const { profile } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -52,7 +57,7 @@ export default async function OverviewPage() {
 
   // Onboarding can be broken off after step 1, which is what creates the
   // organisation. Finish it before anything that assumes it is done.
-  const nextStep = onboardingNextStep(organisation);
+  const nextStep = nextRequiredStep(organisation);
   if (nextStep) redirect(nextStep);
 
   const listings = await getListings(organisation.id);
@@ -91,6 +96,18 @@ export default async function OverviewPage() {
         >
           We check every organisation before its listings can reach women.
           Posting and inviting colleagues open as soon as that is done.
+        </Banner>
+      ) : null}
+
+      {profile === "done" ? (
+        <Banner
+          tone="info"
+          icon={<Clock size={20} strokeWidth={2} />}
+          title="Thank you. That is everything from you."
+        >
+          Your profile is done and we have what we need. We are checking you
+          over and will email either way. Posting opens as soon as we are
+          finished.
         </Banner>
       ) : null}
 

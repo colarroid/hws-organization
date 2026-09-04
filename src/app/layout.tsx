@@ -4,6 +4,8 @@ import { OrgHeader } from "@/components/organisations/OrgHeader";
 import { OrgSidebar } from "@/components/organisations/OrgSidebar";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { getListings } from "@/lib/data/listings";
+import { onboardingNextStep } from "@/lib/onboarding";
+import { isProfileComplete } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -55,6 +57,13 @@ export default async function RootLayout({
 
   const organisation = user ? await getMyOrganisation() : null;
 
+  // The rail waits until onboarding proper is done. Before that there is
+  // genuinely nowhere to move between, and while the profile is still owed
+  // there is exactly one place, so the rail holds only that.
+  const onboarding = organisation ? onboardingNextStep(organisation) : null;
+  const navigable = Boolean(organisation) && !onboarding;
+  const restricted = navigable && !isProfileComplete(organisation!);
+
   // The count beside "My solutions" is live listings rather than all of them.
   const listings = organisation ? await getListings(organisation.id) : [];
   const liveCount = listings.filter((l) => l.status === "live").length;
@@ -69,13 +78,16 @@ export default async function RootLayout({
           that only makes the flow look longer.
         */}
         <div className="flex min-h-screen bg-ground text-ink">
-          {organisation ? <OrgSidebar liveCount={liveCount} /> : null}
+          {navigable ? (
+            <OrgSidebar liveCount={liveCount} restricted={restricted} />
+          ) : null}
 
           <div className="flex min-w-0 flex-1 flex-col">
             <OrgHeader
               signedIn={Boolean(user)}
-              hasOrganisation={Boolean(organisation)}
+              hasOrganisation={navigable}
               liveCount={liveCount}
+              restricted={restricted}
             />
             <main className="flex flex-1 flex-col">{children}</main>
           </div>

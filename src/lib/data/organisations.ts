@@ -66,6 +66,8 @@ export type MyOrganisation = {
   logo_path: string | null;
   logo_source: string | null;
   profile_updated_at: string | null;
+  /** Set once, when the profile was first completed. Null means not in the queue. */
+  verification_requested_at: string | null;
   /** Derived from logo_path. Null when they have not set one. */
   logoUrl: string | null;
 };
@@ -95,7 +97,7 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
        service_kinds, access_routes, cost_options, cost_note, coverage,
        coverage_note, eligibility, not_eligible, posting_frequency,
        availability, availability_note, logo_path, logo_source,
-       profile_updated_at`,
+       profile_updated_at, verification_requested_at`,
     )
     .eq("id", membership.organisation_id)
     .single();

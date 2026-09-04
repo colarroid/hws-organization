@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { normaliseWebsite } from "@/lib/website";
 import { EXTENSION, sniffImageType } from "@/lib/image";
+import { isProfileComplete } from "@/lib/profile";
 import {
   AUDIENCES,
   AVAILABILITY,
@@ -137,37 +138,48 @@ export async function saveProfile(
   const audiences = known(formData.getAll("audiences"), AUDIENCES);
   const costOptions = known(formData.getAll("costOptions"), COSTS);
 
+  const profile = {
+    mission: text(formData.get("mission")),
+    unique_offer: text(formData.get("uniqueOffer")),
+    audiences,
+    // Dropped rather than kept when the question that produced it is no
+    // longer on screen, so nothing invisible is saved on their behalf.
+    audiences_other: audiences.includes("any_woman")
+      ? null
+      : text(formData.get("audiencesOther"), 400),
+    service_kinds: known(formData.getAll("serviceKinds"), SOLUTION_KINDS),
+    access_routes: known(formData.getAll("accessRoutes"), FORMATS),
+    cost_options: costOptions,
+    cost_note: costOptions.includes("there_is_a_cost")
+      ? text(formData.get("costNote"), 400)
+      : null,
+    coverage,
+    coverage_note:
+      coverage && coverage !== "scotland_wide" && coverage !== "online_only"
+        ? text(formData.get("coverageNote"), 400)
+        : null,
+    eligibility: text(formData.get("eligibility")),
+    not_eligible: text(formData.get("notEligible")),
+    posting_frequency: one(formData.get("postingFrequency"), POSTING_FREQUENCY),
+    availability,
+    availability_note:
+      availability === "term_time" || availability === "seasonal"
+        ? text(formData.get("availabilityNote"), 400)
+        : null,
+  };
+
+  // Judged on what is about to be written rather than on what is in the
+  // database, so it is true on the save that completes it rather than one
+  // save late. Verification was already asked for at the end of onboarding;
+  // what this decides is when the rest of the portal opens up.
+  const complete = isProfileComplete({ ...organisation, ...profile });
+  const wasComplete = isProfileComplete(organisation);
+
   const { error } = await supabase
     .from("organisations")
     .update({
+      ...profile,
       website: website.value,
-      mission: text(formData.get("mission")),
-      unique_offer: text(formData.get("uniqueOffer")),
-      audiences,
-      // Dropped rather than kept when the question that produced it is no
-      // longer on screen, so nothing invisible is saved on the woman's behalf.
-      audiences_other: audiences.includes("any_woman")
-        ? null
-        : text(formData.get("audiencesOther"), 400),
-      service_kinds: known(formData.getAll("serviceKinds"), SOLUTION_KINDS),
-      access_routes: known(formData.getAll("accessRoutes"), FORMATS),
-      cost_options: costOptions,
-      cost_note: costOptions.includes("there_is_a_cost")
-        ? text(formData.get("costNote"), 400)
-        : null,
-      coverage,
-      coverage_note:
-        coverage && coverage !== "scotland_wide" && coverage !== "online_only"
-          ? text(formData.get("coverageNote"), 400)
-          : null,
-      eligibility: text(formData.get("eligibility")),
-      not_eligible: text(formData.get("notEligible")),
-      posting_frequency: one(formData.get("postingFrequency"), POSTING_FREQUENCY),
-      availability,
-      availability_note:
-        availability === "term_time" || availability === "seasonal"
-          ? text(formData.get("availabilityNote"), 400)
-          : null,
       logo_path: logoPath,
       logo_source: logoSource,
       profile_updated_at: new Date().toISOString(),
@@ -179,5 +191,13 @@ export async function saveProfile(
   revalidatePath("/organisation");
   revalidatePath("/organisation/profile");
   revalidatePath("/dashboard");
-  redirect("/organisation?saved=profile");
+
+  // Straight to the overview the first time it is complete, because that is
+  // the moment the rest of the portal appears and the news is worth landing
+  // on. Afterwards it is an edit, and an edit belongs back where it started.
+  redirect(
+    complete && !wasComplete
+      ? "/dashboard?profile=done"
+      : "/organisation?saved=profile",
+  );
 }

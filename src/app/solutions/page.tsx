@@ -8,7 +8,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
-import { isVerified, onboardingNextStep } from "@/lib/onboarding";
+import { isVerified, nextRequiredStep } from "@/lib/onboarding";
 import {
   getListings,
   getStatsByListing,
@@ -55,7 +55,7 @@ export default async function SolutionsPage({
   const organisation = await getMyOrganisation();
   if (!organisation) redirect("/onboarding/about");
 
-  const nextStep = onboardingNextStep(organisation);
+  const nextStep = nextRequiredStep(organisation);
   if (nextStep) redirect(nextStep);
 
   const listings = await getListings(organisation.id);

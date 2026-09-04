@@ -1,4 +1,5 @@
 import type { MyOrganisation } from "@/lib/data/organisations";
+import { isProfileComplete } from "@/lib/profile";
 
 /**
  * The onboarding screen still owed, or null once all three are done.
@@ -36,4 +37,26 @@ export function onboardingNextStep(
  */
 export function isVerified(organisation: MyOrganisation | null): boolean {
   return organisation?.status === "verified";
+}
+
+/**
+ * The next screen owed before the portal is usable at all.
+ *
+ * Onboarding is the first three; the profile is the fourth, and it is the one
+ * that puts an organisation in the verification queue. Nothing else in the
+ * portal is worth reaching before it is done: there is nothing to see on the
+ * overview, and a listing cannot be posted by an unverified organisation
+ * anyway. So the profile is the whole portal until it is finished.
+ *
+ * Same rule as above: a screen must not guard itself with this. The profile
+ * page uses `onboardingNextStep` alone, or it would redirect to where it
+ * already is.
+ */
+export function nextRequiredStep(
+  organisation: MyOrganisation | null,
+): string | null {
+  const onboarding = onboardingNextStep(organisation);
+  if (onboarding) return onboarding;
+  if (!organisation) return "/onboarding/about";
+  return isProfileComplete(organisation) ? null : "/organisation/profile";
 }

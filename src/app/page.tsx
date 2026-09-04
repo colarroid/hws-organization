@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getMyOrganisation } from "@/lib/data/organisations";
-import { onboardingNextStep } from "@/lib/onboarding";
+import { nextRequiredStep } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -24,5 +24,5 @@ export default async function OrganisationsIndex() {
   // organisation, so that test sent anyone who broke off after it to a
   // dashboard for a listing they could not yet publish.
   const organisation = await getMyOrganisation();
-  redirect(onboardingNextStep(organisation) ?? "/dashboard");
+  redirect(nextRequiredStep(organisation) ?? "/dashboard");
 }
