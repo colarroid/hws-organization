@@ -42,9 +42,7 @@ export default async function ProfilePage() {
           About {organisation.name}
         </h1>
         <p className="m-0 max-w-[64ch] text-[17px] leading-[1.55] text-ink-70">
-          This is how we know who to send you. It is also what an HWS admin
-          reads when deciding whether to verify you, so the fuller it is, the
-          less we have to come back and ask.
+          This is how we know you, and who to send you.
         </p>
       </div>
 

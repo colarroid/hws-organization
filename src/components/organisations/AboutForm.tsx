@@ -73,29 +73,14 @@ export function AboutForm({ organisation }: { organisation: MyOrganisation | nul
         ))}
       </div>
 
-      <div className="flex flex-col gap-[14px] sm:flex-row">
-        <div className="flex-1">
-          <Field
-            label="Website"
-            name="website"
-            /* Not type="url": the browser would reject anything without a
-               scheme, and people do not type schemes. The action adds it. */
-            inputMode="url"
-            autoComplete="url"
-            defaultValue={organisation?.website ?? ""}
-            placeholder="example.org"
-            hint="No need for https:// — we will add it."
-          />
-        </div>
-        <div className="flex-1">
-          <PlaceField
-            label="Where you are based"
-            name="place"
-            defaultValue={organisation?.place ?? ""}
-            placeholder="e.g. Glasgow City"
-          />
-        </div>
-      </div>
+      {/* The website is asked for on the profile instead, where it doubles as
+          the source of the logo. Asking here as well made it two questions. */}
+      <PlaceField
+        label="Where you are based"
+        name="place"
+        defaultValue={organisation?.place ?? ""}
+        placeholder="e.g. Glasgow City"
+      />
 
       <TextAreaField
         label="In one sentence, what does your organisation do?"

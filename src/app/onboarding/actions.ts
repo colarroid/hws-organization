@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { ORGANISATION_TYPES } from "@/lib/design/taxonomy";
-import { normaliseWebsite } from "@/lib/website";
 import type { FormState } from "../actions";
 
 const TYPE_SLUGS = ORGANISATION_TYPES.map((t) => t.slug) as [string, ...string[]];
@@ -15,7 +14,6 @@ const aboutSchema = z.object({
     .array(z.enum(TYPE_SLUGS))
     .min(1, "Pick at least one kind of organisation.")
     .max(TYPE_SLUGS.length),
-  website: z.string().trim().optional(),
   place: z.string().trim().optional(),
   blurb: z.string().trim().optional(),
 });
@@ -34,15 +32,11 @@ export async function saveAbout(
   const parsed = aboutSchema.safeParse({
     name: formData.get("name"),
     types: formData.getAll("types").map(String),
-    website: formData.get("website"),
     place: formData.get("place"),
     blurb: formData.get("blurb"),
   });
 
   if (!parsed.success) return { error: parsed.error.issues[0].message };
-
-  const website = normaliseWebsite(parsed.data.website);
-  if (!website.ok) return { error: website.error };
 
   const supabase = await createClient();
   const {
@@ -55,7 +49,6 @@ export async function saveAbout(
   const fields = {
     name: parsed.data.name,
     types: parsed.data.types,
-    website: website.value,
     place: parsed.data.place || null,
     blurb: parsed.data.blurb || null,
   };
@@ -73,7 +66,8 @@ export async function saveAbout(
     const { error } = await supabase.rpc("create_organisation", {
       p_name: fields.name,
       p_types: fields.types,
-      p_website: fields.website,
+      // Asked for on the profile, not here.
+      p_website: null,
       p_place: fields.place,
       p_blurb: fields.blurb,
     });

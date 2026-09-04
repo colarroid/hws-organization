@@ -116,7 +116,6 @@ export function LogoField({
         value={website}
         onChange={(event) => setWebsite(event.target.value)}
         placeholder="example.org"
-        hint="No need for https:// — we will add it."
       />
 
       <div className="flex flex-col gap-[10px]">

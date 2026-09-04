@@ -216,7 +216,7 @@ export function ProfileForm({ organisation }: { organisation: MyOrganisation }) 
 
       <Section
         title="When you run, and how often you post"
-        blurb="This sets the rhythm we keep with you. Tell us you post when funding allows and we stop chasing you monthly."
+        blurb="This sets what a woman can expect from you, and how often we check in."
       >
         <RadioGroup
           legend="When is your offer available?"
