@@ -26,7 +26,7 @@ import {
   getListings,
   staleListings,
 } from "@/lib/data/listings";
-import { countLine, shortDate } from "@/lib/design/listing-copy";
+import { shortDate } from "@/lib/design/listing-copy";
 import { getTranslator } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -139,7 +139,6 @@ export default async function OverviewPage({
         <h1 className="m-0 font-display text-[44px] font-normal leading-[1.1] tracking-[-0.01em]">
           {organisation.name}
         </h1>
-        <span className="text-[16px] text-ink-70">{countLine(listings)}</span>
       </div>
 
       {hasAny ? (

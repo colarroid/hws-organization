@@ -119,7 +119,7 @@ export function SolutionForm({
           rows={2}
           defaultValue={listing?.what_to_expect ?? ""}
           placeholder="e.g. A short form, then someone phones within a week. Or: drop in any Tuesday, no need to book."
-          hint="Applying, turning up, or just reading it — say what actually happens. Not knowing is the most common reason women do not act on a listing."
+          hint="Applying, turning up, or just reading it. Say what actually happens, because not knowing is the most common reason women do not act on a listing."
         />
 
         <div className="flex flex-col gap-[10px]">
@@ -161,7 +161,7 @@ export function SolutionForm({
               defaultValue={listing?.place ?? ""}
               placeholder="e.g. Bathgate, or Scotland-wide"
               extras={["Scotland-wide", "Online"]}
-              hint="Her answer is matched against this. A typo here does not look like a typo — it quietly hides you from the women closest to you."
+              hint="Her answer is matched against this. A typo here does not look like a typo to anyone. It quietly hides you from the women closest to you."
             />
           </div>
           <div className="min-w-[200px] flex-1">
