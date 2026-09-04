@@ -36,7 +36,7 @@ const ITEMS = [
 const PROFILE_ONLY = [
   {
     href: "/organisation/profile",
-    label: "About your organisation",
+    label: "Your profile",
     icon: Building2,
     counted: false,
   },
