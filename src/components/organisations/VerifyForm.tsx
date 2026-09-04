@@ -34,7 +34,7 @@ export function VerifyForm({ organisationId }: { organisationId: string }) {
       <Field
         label="Who funds you"
         name="funderNote"
-        placeholder="e.g. The National Lottery Community Fund"
+        placeholder="Optional"
         hint="Only needed if you have no registration number. A sponsor, a grant-maker, or whoever pays for the work."
       />
 
