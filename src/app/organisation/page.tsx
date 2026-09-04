@@ -6,6 +6,7 @@ import { Page } from "@/components/ui/Page";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation, getAccessZones } from "@/lib/data/organisations";
 import { isVerified, onboardingNextStep } from "@/lib/onboarding";
+import { profileGaps, andList } from "@/lib/profile";
 import { VerificationStatus } from "@/components/organisations/VerificationStatus";
 import { InviteColleagueForm } from "@/components/organisations/InviteForms";
 import { revokeInvitation } from "@/app/organisation/actions";
@@ -21,7 +22,12 @@ export const metadata: Metadata = { title: "Organisation" };
  * Verification status, the details women see beside every listing, and who
  * can post. There is no account-removal section, by decision.
  */
-export default async function OrganisationPage() {
+export default async function OrganisationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const { saved } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -46,6 +52,7 @@ export default async function OrganisationPage() {
     .is("accepted_at", null)
     .order("created_at");
 
+  const gaps = profileGaps(organisation);
   const zones = await getAccessZones();
   const primaryZone =
     zones.find((z) => z.id === organisation.primaryZoneId)?.name ?? "Not set";
@@ -56,6 +63,41 @@ export default async function OrganisationPage() {
       <h1 className="m-0 font-display text-[42px] font-normal leading-[1.1] tracking-[-0.01em]">
         Organisation
       </h1>
+
+      {saved === "profile" ? (
+        <p className="m-0 rounded-card bg-sage-200 px-[22px] py-4 text-[16px] leading-[1.5] text-green-700">
+          Saved. That is what tells us who to send you.
+        </p>
+      ) : null}
+
+      <section className="flex flex-col gap-3">
+        <h2 className="m-0 eyebrow text-ink-60">
+          About your organisation
+        </h2>
+        <div className="flex flex-col gap-3 rounded-card bg-surface px-[22px] py-5 shadow-hairline">
+          <div className="flex flex-wrap items-center gap-4">
+            {organisation.logoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={organisation.logoUrl}
+                alt=""
+                className="size-[44px] shrink-0 rounded-control object-contain"
+              />
+            ) : null}
+            <p className="m-0 flex-1 text-[16px] leading-[1.55] text-ink-70">
+              {gaps.length === 0
+                ? "Your mission, who you serve, where you reach and how often you post. All filled in."
+                : "Still to fill in: " + andList(gaps) + "."}
+            </p>
+          </div>
+          <Link
+            href="/organisation/profile"
+            className="self-start p-1 text-[15px] font-bold text-gold-700 no-underline"
+          >
+            {organisation.profile_updated_at ? "Review it" : "Fill it in"}
+          </Link>
+        </div>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="m-0 eyebrow text-ink-60">

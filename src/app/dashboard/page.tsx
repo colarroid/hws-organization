@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Clock, EyeOff, FilePlus2, TriangleAlert } from "lucide-react";
+import {
+  ArrowRight,
+  ClipboardList,
+  Clock,
+  EyeOff,
+  FilePlus2,
+  TriangleAlert,
+} from "lucide-react";
 import { Page } from "@/components/ui/Page";
 import { ButtonLink } from "@/components/ui/Button";
 import { Banner } from "@/components/organisations/Banner";
@@ -9,6 +16,7 @@ import { ConfirmFreshnessButton } from "@/components/organisations/ConfirmFreshn
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { isVerified, onboardingNextStep } from "@/lib/onboarding";
+import { profileGaps, andList } from "@/lib/profile";
 import {
   getListings,
   getStatsByListing,
@@ -53,6 +61,7 @@ export default async function OverviewPage() {
   const stale = staleListings(listings);
   // Reaches nobody until it is sorted, so it outranks a freshness nudge.
   const takenDown = listings.filter((l) => l.hidden_at);
+  const profileMissing = profileGaps(organisation);
   const hasAny = listings.length > 0;
 
   return (
@@ -82,6 +91,22 @@ export default async function OverviewPage() {
         >
           We check every organisation before its listings can reach women.
           Posting and inviting colleagues open as soon as that is done.
+        </Banner>
+      ) : null}
+
+      {profileMissing.length > 0 ? (
+        <Banner
+          tone="info"
+          icon={<ClipboardList size={20} strokeWidth={2} />}
+          title="Tell us about your organisation"
+          action={
+            <ButtonLink href="/organisation/profile" variant="secondary" size="inline">
+              {organisation.profile_updated_at ? "Finish it" : "Start"}
+            </ButtonLink>
+          }
+        >
+          We still need {andList(profileMissing)}. It is what decides who we
+          send you, and it is the first thing an admin reads when verifying.
         </Banner>
       ) : null}
 

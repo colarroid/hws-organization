@@ -44,6 +44,30 @@ export type MyOrganisation = {
   review_note: string | null;
   primaryZoneId: string | null;
   alsoZoneIds: string[];
+
+  // The profile. Every field optional: a half-finished profile is a normal
+  // state, and the form saves without demanding the rest.
+  mission: string | null;
+  unique_offer: string | null;
+  audiences: string[];
+  audiences_other: string | null;
+  service_kinds: string[];
+  access_routes: string[];
+  cost_options: string[];
+  cost_note: string | null;
+  coverage: string | null;
+  coverage_note: string | null;
+  eligibility: string | null;
+  not_eligible: string | null;
+  posting_frequency: string | null;
+  availability: string | null;
+  availability_note: string | null;
+  /** Object path in the organisation-logos bucket, never a remote URL. */
+  logo_path: string | null;
+  logo_source: string | null;
+  profile_updated_at: string | null;
+  /** Derived from logo_path. Null when they have not set one. */
+  logoUrl: string | null;
 };
 
 /** The organisation the signed-in user belongs to, if any. */
@@ -66,7 +90,12 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
   const { data: org } = await supabase
     .from("organisations")
     .select(
-      "id, name, types, website, place, blurb, status, verified_at, review_note, contact_name",
+      `id, name, types, website, place, blurb, status, verified_at, review_note,
+       contact_name, mission, unique_offer, audiences, audiences_other,
+       service_kinds, access_routes, cost_options, cost_note, coverage,
+       coverage_note, eligibility, not_eligible, posting_frequency,
+       availability, availability_note, logo_path, logo_source,
+       profile_updated_at`,
     )
     .eq("id", membership.organisation_id)
     .single();
@@ -81,6 +110,11 @@ export async function getMyOrganisation(): Promise<MyOrganisation | null> {
   return {
     ...org,
     types: org.types ?? [],
+    logoUrl: logoUrl(supabase, org.logo_path),
+    audiences: org.audiences ?? [],
+    service_kinds: org.service_kinds ?? [],
+    access_routes: org.access_routes ?? [],
+    cost_options: org.cost_options ?? [],
     primaryZoneId: zones?.find((z) => z.role === "primary")?.zone_id ?? null,
     alsoZoneIds: (zones ?? [])
       .filter((z) => z.role === "also")
@@ -112,4 +146,19 @@ export async function getSituations(): Promise<Situation[]> {
 
   if (error) throw error;
   return data ?? [];
+}
+
+/**
+ * The public URL for a logo, or null.
+ *
+ * The bucket is public, so this is string building rather than a request, and
+ * it is done here so no screen has to know the bucket's name.
+ */
+function logoUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  path: string | null | undefined,
+): string | null {
+  if (!path) return null;
+  const { data } = supabase.storage.from("organisation-logos").getPublicUrl(path);
+  return data.publicUrl;
 }
