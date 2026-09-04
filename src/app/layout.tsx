@@ -6,6 +6,7 @@ import { getMyOrganisation } from "@/lib/data/organisations";
 import { getListings } from "@/lib/data/listings";
 import { onboardingNextStep } from "@/lib/onboarding";
 import { isProfileComplete } from "@/lib/profile";
+import { getLocale } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -56,6 +57,7 @@ export default async function RootLayout({
   } = await supabase.auth.getUser();
 
   const organisation = user ? await getMyOrganisation() : null;
+  const locale = await getLocale();
 
   // The rail waits until onboarding proper is done. Before that there is
   // genuinely nowhere to move between, and while the profile is still owed
@@ -69,7 +71,11 @@ export default async function RootLayout({
   const liveCount = listings.filter((l) => l.status === "live").length;
 
   return (
-    <html lang="en-GB" className={`${playfair.variable} ${inter.variable}`}>
+    <html
+      lang={locale.code === "en" ? "en-GB" : locale.code}
+      dir={locale.dir}
+      className={`${playfair.variable} ${inter.variable}`}
+    >
       <body>
         {/*
           The rail appears only once there is an organisation to navigate.

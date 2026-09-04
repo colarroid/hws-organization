@@ -16,10 +16,10 @@ import { createClient } from "@/lib/supabase/server";
 
 export type Period = "week" | "month" | "all";
 
-export const PERIODS: { slug: Period; label: string }[] = [
-  { slug: "week", label: "This week" },
-  { slug: "month", label: "This month" },
-  { slug: "all", label: "All time" },
+export const PERIODS: { slug: Period; key: "period.week" | "period.month" | "period.all" }[] = [
+  { slug: "week", key: "period.week" },
+  { slug: "month", key: "period.month" },
+  { slug: "all", key: "period.all" },
 ];
 
 export function periodFrom(value: string | undefined): Period {

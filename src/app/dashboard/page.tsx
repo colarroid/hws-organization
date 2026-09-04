@@ -27,6 +27,8 @@ import {
   staleListings,
 } from "@/lib/data/listings";
 import { countLine, shortDate } from "@/lib/design/listing-copy";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getTranslator } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -69,6 +71,7 @@ export default async function OverviewPage({
   // Reaches nobody until it is sorted, so it outranks a freshness nudge.
   const takenDown = listings.filter((l) => l.hidden_at);
   const reach = await getOrganisationStats(organisation.id, period);
+  const { t, locale } = await getTranslator();
   const profileMissing = profileGaps(organisation);
   const hasAny = listings.length > 0;
 
@@ -95,10 +98,9 @@ export default async function OverviewPage({
         <Banner
           tone="info"
           icon={<Clock size={20} strokeWidth={2} />}
-          title="Verification in progress"
+          title={t("verify.pendingTitle")}
         >
-          We check every organisation before its listings can reach women.
-          Posting and inviting colleagues open as soon as that is done.
+          {t("verify.pendingBody")}
         </Banner>
       ) : null}
 
@@ -118,17 +120,27 @@ export default async function OverviewPage({
         <Banner
           tone="info"
           icon={<ClipboardList size={20} strokeWidth={2} />}
-          title="Tell us about your organisation"
+          title={t("profile.title")}
           action={
             <ButtonLink href="/organisation/profile" variant="secondary" size="inline">
-              {organisation.profile_updated_at ? "Finish it" : "Start"}
+              {organisation.profile_updated_at ? t("profile.finish") : t("profile.start")}
             </ButtonLink>
           }
         >
+          {/* Left in English on purpose: it names the specific fields that
+              are missing, and those come from the profile form, which is not
+              translated. Half a sentence in each language reads worse than a
+              whole one in the language the form is in. */}
           We still need {andList(profileMissing)}. It is what decides who we
           send you, and it is the first thing an admin reads when verifying.
         </Banner>
       ) : null}
+
+      {/* First, because somebody who cannot read the rest needs this before
+          anything else on the screen. */}
+      <div className="self-end">
+        <LanguageSwitcher label={t("language.label")} current={locale.code} />
+      </div>
 
       <div className="flex flex-col gap-2">
         <h1 className="m-0 font-display text-[44px] font-normal leading-[1.1] tracking-[-0.01em]">
@@ -157,7 +169,7 @@ export default async function OverviewPage({
                       : "bg-surface text-ink shadow-hairline transition-[box-shadow] duration-150 ease-out hover:shadow-hairline-gold",
                   ].join(" ")}
                 >
-                  {option.label}
+                  {t(option.key)}
                 </Link>
               );
             })}
@@ -172,7 +184,9 @@ export default async function OverviewPage({
                 {listings.length}
               </span>
               <span className="flex items-center gap-[6px] text-[14px] text-ink-65">
-                {listings.length === 1 ? "solution posted" : "solutions posted"}
+                {listings.length === 1
+                  ? t("stats.posted.one")
+                  : t("stats.posted.many")}
                 <ArrowRight
                   size={15}
                   strokeWidth={2}
@@ -185,13 +199,13 @@ export default async function OverviewPage({
             {[
               {
                 value: reach.reached,
-                label: "women reached",
-                note: "went through to you",
+                label: t("stats.reached"),
+                note: t("stats.reachedNote"),
               },
               {
                 value: reach.profileViews,
-                label: "profile visits",
-                note: "read about you",
+                label: t("stats.profileViews"),
+                note: t("stats.profileViewsNote"),
               },
             ].map((stat) => (
               <div
@@ -252,7 +266,7 @@ export default async function OverviewPage({
             href="/solutions"
             className="inline-flex items-center gap-2 self-start p-1 text-[16px] font-bold text-gold-700"
           >
-            <span>See all your solutions</span>
+            <span>{t("seeAll")}</span>
             <ArrowRight size={17} strokeWidth={2} aria-hidden="true" />
           </Link>
         </>
