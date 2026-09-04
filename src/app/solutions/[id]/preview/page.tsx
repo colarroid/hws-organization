@@ -69,7 +69,7 @@ export default async function PreviewPage({
     // something already published is the page contradicting itself.
     verified: published
       ? listing.last_confirmed_at
-        ? `Verified · last checked ${DATE.format(new Date(listing.last_confirmed_at))}`
+        ? `Verified · last updated ${DATE.format(new Date(listing.last_confirmed_at))}`
         : "Verified"
       : "Verified once we check this listing",
   };
