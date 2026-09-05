@@ -127,8 +127,11 @@ export default async function SolutionsPage({
                 key={listing.id}
                 className="flex flex-col gap-[14px] rounded-card shadow-hairline bg-surface p-6"
               >
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div className="flex flex-col gap-2">
+                {/* Same rule as the admin queues: stacked below sm rather
+                    than wrapping, so a long solution name does not decide
+                    where the buttons end up. */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+                  <div className="flex min-w-0 flex-col gap-2">
                     <StatusPill
                       status={listing.status}
                       hidden={Boolean(listing.hidden_at)}
@@ -138,7 +141,7 @@ export default async function SolutionsPage({
                     </span>
                     <span className="text-[15px] text-ink-65">{metaLine(listing)}</span>
                   </div>
-                  <div className="flex items-center gap-[10px]">
+                  <div className="flex shrink-0 items-center gap-[10px]">
                     <ButtonLink
                       href={`/solutions/${listing.id}/edit`}
                       variant="secondary"
