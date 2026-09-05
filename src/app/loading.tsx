@@ -1,4 +1,4 @@
-import { SkeletonPage } from "@/components/ui/Skeleton";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 /**
  * The wait, for every screen that does not name its own.
@@ -8,10 +8,10 @@ import { SkeletonPage } from "@/components/ui/Skeleton";
  * before it can render anything, so this shows more often than it does on the
  * public site.
  *
- * Deliberately generic. A skeleton that guesses a shape and guesses wrong
- * makes the real screen look like it moved, so this commits to nothing more
- * than a heading and a couple of blocks under it.
+ * The wording is the vaguest in the portal, because it stands in for any
+ * screen. Anywhere the wait can be named properly, it is named in that
+ * route's own loading.tsx instead.
  */
 export default function Loading() {
-  return <SkeletonPage label="Loading" width={820} cards={2} />;
+  return <LoadingScreen title="One moment…" width={820} count={2} />;
 }
