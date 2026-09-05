@@ -1,4 +1,4 @@
-import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { LoadingPage } from "@/components/ui/LoadingScreen";
 
 /**
  * The organisation screens, waiting.
@@ -7,5 +7,5 @@ import { LoadingScreen } from "@/components/ui/LoadingScreen";
  * in the portal.
  */
 export default function Loading() {
-  return <LoadingScreen title="Getting your profile…" width={660} count={3} />;
+  return <LoadingPage label="Loading your organisation" width={660} count={3} />;
 }

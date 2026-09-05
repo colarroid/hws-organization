@@ -1,4 +1,4 @@
-import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { LoadingPage } from "@/components/ui/LoadingScreen";
 
 /**
  * The solutions list, waiting.
@@ -8,7 +8,5 @@ import { LoadingScreen } from "@/components/ui/LoadingScreen";
  * list makes the page jump upward as it fills.
  */
 export default function Loading() {
-  return (
-    <LoadingScreen title="Getting your solutions…" width={900} count={4} />
-  );
+  return <LoadingPage label="Loading your solutions" width={900} count={4} />;
 }
