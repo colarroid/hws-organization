@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { MIN_PASSWORD_LENGTH } from "@/lib/design/taxonomy";
+import { describeAuthError } from "@/lib/auth-error";
 
 export type FormState = { error?: string } | null;
 
@@ -94,7 +95,11 @@ export async function signUp(
     },
   });
 
-  if (error) return { error: error.message };
+  // "Error sending confirmation email" is the same sentence whether the
+  // template will not render, the SMTP login is refused, or the hourly limit
+  // is reached. This separates them as far as GoTrue lets us, and puts the
+  // rest in the log.
+  if (error) return { error: describeAuthError("sign-up", error).message };
 
   // Supabase returns a session here only when email confirmation is switched
   // off for the project. In that case the account is already usable, and
@@ -203,7 +208,7 @@ export async function setNewPassword(
     password: parsed.data.password,
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: describeAuthError("set-password", error).message };
 
   // Straight to the dashboard only if onboarding is done. The root sorts
   // that out, so a half-onboarded organisation is not dropped somewhere
