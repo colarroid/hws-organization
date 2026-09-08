@@ -209,6 +209,22 @@ export default async function OverviewPage({
             ))}
           </div>
 
+          {/* What the figures mean, because "women reached" told nobody.
+              The middle number is the one worth having: it counts women who
+              went on to the organisation's own site or application, which is
+              the platform's whole argument for being worth listing on. Left
+              in English with the rest of this line, for the same reason the
+              missing-profile-fields sentence is: it names things the forms
+              call by their English names. */}
+          <p className="m-0 max-w-[68ch] text-[15px] leading-[1.6] text-ink-65">
+            <strong className="font-semibold text-ink">Sent to you</strong>{" "}
+            counts women who went on to your own site or application from a
+            solution you posted.{" "}
+            <strong className="font-semibold text-ink">Profile visits</strong>{" "}
+            are women who read your organisation page. Views of each solution
+            are on the solutions list.
+          </p>
+
           {takenDown.length > 0 ? (
             <Banner
               tone="warning"
