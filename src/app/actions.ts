@@ -7,7 +7,15 @@ import { createClient } from "@/lib/supabase/server";
 import { MIN_PASSWORD_LENGTH } from "@/lib/design/taxonomy";
 import { describeAuthError } from "@/lib/auth-error";
 
-export type FormState = { error?: string } | null;
+export type FormState = {
+  error?: string;
+  /**
+   * The address already has a usable account, so the screen should offer a
+   * way in rather than only refusing. Separate from `error` because the
+   * sentence is not the whole of what to show.
+   */
+  existing?: boolean;
+} | null;
 
 /** Absolute origin for email redirect links, taken from the request host. */
 async function origin() {
@@ -100,6 +108,50 @@ export async function signUp(
   // is reached. This separates them as far as GoTrue lets us, and puts the
   // rest in the log.
   if (error) return { error: describeAuthError("sign-up", error).message };
+
+  /*
+   * An address that already has a confirmed account.
+   *
+   * Supabase does not report this as an error. It returns a user with a
+   * fabricated id and an empty identities array, sends no email at all, and
+   * leaves the caller to decide what to say — the obfuscation exists so that
+   * a sign-up form cannot be used to discover who is registered.
+   *
+   * Without this branch the screen did the worst possible thing: it sent them
+   * to "check your email" for a message Supabase had already decided not to
+   * send, and they waited for it.
+   *
+   * Confirmed against the live project, because the two cases look almost
+   * identical and only one of them should say this:
+   *
+   *   address exists, not yet confirmed -> identities has 1, email resent
+   *   address exists, confirmed         -> identities has 0, nothing sent
+   *
+   * So the unconfirmed case deliberately falls through to /confirm below.
+   * Telling somebody who has never confirmed to "sign in instead" would be
+   * sending them to a door they cannot open yet, and Supabase has just resent
+   * the email they actually need.
+   *
+   * Array.isArray rather than `?? 0`, because a missing identities field
+   * would otherwise read as an empty one and turn every new sign-up into
+   * "you already have an account".
+   *
+   * THIS DOES DISCLOSE that an address is registered, which sign-in a few
+   * lines down deliberately refuses to do. HWS asked for it and it is the
+   * ordinary behaviour of a business portal — but it is a real asymmetry, so:
+   * if the two ever need to agree again, this is the half that changed.
+   */
+  if (
+    !data.session &&
+    data.user &&
+    Array.isArray(data.user.identities) &&
+    data.user.identities.length === 0
+  ) {
+    return {
+      error: "An account already exists for that email address.",
+      existing: true,
+    };
+  }
 
   // Supabase returns a session here only when email confirmation is switched
   // off for the project. In that case the account is already usable, and

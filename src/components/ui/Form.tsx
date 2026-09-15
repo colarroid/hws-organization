@@ -17,16 +17,29 @@ export function SubmitButton({ children }: { children: React.ReactNode }) {
  * border. tabIndex plus role="alert" means a screen reader hears it and a
  * keyboard user lands on it.
  */
-export function FormError({ message }: { message?: string }) {
+/**
+ * `action` is rendered inside the alert rather than under it, so somebody on
+ * a screen reader hears the way out as part of the problem. A refusal with
+ * the remedy somewhere else on the page is a refusal most people read as a
+ * dead end.
+ */
+export function FormError({
+  message,
+  action,
+}: {
+  message?: string;
+  action?: React.ReactNode;
+}) {
   if (!message) return null;
   return (
     <div
       role="alert"
       tabIndex={-1}
       ref={(node) => node?.focus()}
-      className="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-[15px] leading-[1.5] text-red-700"
+      className="flex flex-col items-start gap-1 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-[15px] leading-[1.5] text-red-700"
     >
-      {message}
+      <span>{message}</span>
+      {action}
     </div>
   );
 }

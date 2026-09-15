@@ -35,7 +35,19 @@ export default function SignUpPage() {
       </div>
 
       <form action={formAction} className="flex flex-col gap-[22px]">
-        <FormError message={state?.error} />
+        <FormError
+          message={state?.error}
+          action={
+            state?.existing ? (
+              <Link
+                href="/sign-in"
+                className="font-bold text-red-700 underline"
+              >
+                Sign in to continue
+              </Link>
+            ) : null
+          }
+        />
 
         <Field
           label="Work email address"
