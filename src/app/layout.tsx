@@ -6,6 +6,7 @@ import { OrgTopBar } from "@/components/organisations/OrgTopBar";
 import { getMyOrganisation } from "@/lib/data/organisations";
 import { getListings } from "@/lib/data/listings";
 import { onboardingNextStep } from "@/lib/onboarding";
+import { Analytics } from "@/components/Analytics";
 import { isProfileComplete } from "@/lib/profile";
 import { getLocale } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/server";
@@ -104,6 +105,10 @@ export default async function RootLayout({
             <main className="flex flex-1 flex-col">{children}</main>
           </div>
         </div>
+
+        {/* Renders nothing: a script that reports which pages get used, with
+            the query string stripped first. See the component. */}
+        <Analytics />
       </body>
     </html>
   );
