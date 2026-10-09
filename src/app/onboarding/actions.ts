@@ -5,6 +5,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { ORGANISATION_TYPES } from "@/lib/design/taxonomy";
 import type { FormState } from "../actions";
+import { sendEmail } from "@/lib/email";
+import { emailLayout, emailText, escapeHtml } from "@/emails/layout";
 
 const TYPE_SLUGS = ORGANISATION_TYPES.map((t) => t.slug) as [string, ...string[]];
 
@@ -180,11 +182,55 @@ export async function saveVerification(
   // number still saves the correction without moving their place in the
   // queue. Rolled into the update above it would have had to match on null
   // and would then have saved nothing at all on a second visit.
-  await supabase
+  const { data: firstAsk } = await supabase
     .from("organisations")
     .update({ verification_requested_at: new Date().toISOString() })
     .eq("id", organisationId)
-    .is("verification_requested_at", null);
+    .is("verification_requested_at", null)
+    .select("name, place")
+    .maybeSingle();
+
+  /*
+   * Tell somebody at HWS, once, the first time they ask.
+   *
+   * An organisation waited fourteen days to be verified because the admin
+   * queue is a page somebody has to decide to open. There is a daily nudge
+   * for that now, in hws-global, which is the thing that actually guarantees
+   * nothing rots. This is the other half: it arrives the moment they press
+   * the button rather than up to a day later, which on a verification an
+   * organisation is sitting waiting for is the difference worth having.
+   *
+   * Guarded on the same update as the timestamp, so it fires only on a real
+   * first submission. Coming back to correct a phone number updates nothing
+   * and mails nobody.
+   *
+   * Nothing is awaited on the way to the redirect and no failure is surfaced:
+   * she has submitted either way, and the daily nudge will find it regardless
+   * if this send fails. The mail is a courtesy on top of a guarantee, not the
+   * guarantee itself.
+   */
+  if (firstAsk) {
+    const where = firstAsk.place ? `, ${firstAsk.place}` : "";
+    const line = `${firstAsk.name}${where} has asked to be verified.`;
+
+    await sendEmail({
+      to:
+        process.env.ADMIN_NOTIFY_EMAIL?.trim() ||
+        "ifydada@theholisticwellbeingsummit.org",
+      subject: `${firstAsk.name} is waiting to be verified`,
+      text: `${line}\n\nThey cannot post a listing or invite anyone until somebody checks them.`,
+      html: emailLayout({
+        preheader: line,
+        heading: "A new organisation to check",
+        body:
+          emailText(escapeHtml(line)) +
+          emailText(
+            "They cannot post a listing or invite anyone until somebody checks them.",
+            "muted",
+          ),
+      }),
+    });
+  }
 
   // Straight to the profile, which is the only thing there is to do next.
   redirect("/organisation/profile");
