@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ORGANISATION_TYPES } from "@/lib/design/taxonomy";
 import type { FormState } from "../actions";
 import { sendEmail } from "@/lib/email";
+import { describeDbError } from "@/lib/db-error";
 import { emailLayout, emailText, escapeHtml } from "@/emails/layout";
 
 const TYPE_SLUGS = ORGANISATION_TYPES.map((t) => t.slug) as [string, ...string[]];
@@ -60,7 +61,7 @@ export async function saveAbout(
       .from("organisations")
       .update(fields)
       .eq("id", existingId);
-    if (error) return { error: error.message };
+    if (error) return { error: describeDbError("update-organisation", error).message };
   } else {
     // Creating the organisation and joining it are one act, so they go
     // through a single function rather than two inserts that can half
@@ -74,7 +75,7 @@ export async function saveAbout(
       p_blurb: fields.blurb,
     });
 
-    if (error) return { error: error.message };
+    if (error) return { error: describeDbError("create-organisation", error).message };
   }
 
   redirect("/onboarding/zones");
@@ -121,7 +122,7 @@ export async function saveZones(
     })),
   ]);
 
-  if (error) return { error: error.message };
+  if (error) return { error: describeDbError("zones", error).message };
 
   redirect("/onboarding/verify");
 }
@@ -176,7 +177,7 @@ export async function saveVerification(
     })
     .eq("id", organisationId);
 
-  if (error) return { error: error.message };
+  if (error) return { error: describeDbError("verify", error).message };
 
   // Separate, and guarded on being unset, so coming back to correct a phone
   // number still saves the correction without moving their place in the
